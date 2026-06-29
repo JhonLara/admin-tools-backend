@@ -117,6 +117,43 @@ public class SolicitudUseCase {
         return mapToResponse(solicitud);
     }
 
+    public SolicitudResponse validarSolicitud(UUID solicitudId) {
+        Solicitud solicitud = solicitudRepository.findById(solicitudId)
+                .orElseThrow(() -> new IllegalArgumentException("Solicitud no encontrada"));
+
+        Aliado aliado = solicitud.getAliado();
+        String chatId = aliado.getTelegramChatId();
+        if (chatId == null || chatId.isBlank()) {
+            chatId = telegramProperties.getAliadosChatId();
+        }
+
+        String mensaje = String.format(
+                "Solicitud validada\ncliente: %s\nEmpresa: %s\nAliado: %s\n\nSe ha enviado enlace para firma digital📱. \n\nRequisitos:\n•Foto Legible 📸: Asegúrese de que la foto sea clara y visible, con el rostro descubierto:\n•Con cédula en mano visible y legible 🪪\n•No usar gafas 🕶️\n•No usar gorras o sombreros 🧢\n•No usar mascarillas o bufandas 😷\n\nProceso de Firma 📝\nUna vez que el cliente haya firmado el documento, confirmar al analista para aprobación de la solicitud y autorización del enrolamiento y entrega del equipo.",
+                solicitud.getCedulaCliente(),
+                aliado.getEmpresa().getNombre(),
+                aliado.getNombre()
+        );
+
+        String respuesta = notificationPort.sendMessage(chatId, mensaje);
+
+        HistorialNotificacion historial = HistorialNotificacion.builder()
+                .solicitud(solicitud)
+                .canal(Canal.TELEGRAM)
+                .origen(Origen.ANALISTA)
+                .destino(Destino.GRUPO_ALIADO)
+                .mensajeEnviado(mensaje)
+                .estadoEnvio(respuesta.contains("error") || respuesta.startsWith("Error:") ? EstadoEnvio.ERROR : EstadoEnvio.ENVIADO)
+                .respuestaIntegracion(respuesta)
+                .build();
+
+        historialRepository.save(historial);
+
+        solicitud.setEstado(EstadoSolicitud.VALIDADA);
+        solicitud = solicitudRepository.save(solicitud);
+
+        return mapToResponse(solicitud);
+    }
+
     public SolicitudResponse aprobarSolicitud(UUID solicitudId) {
         Solicitud solicitud = solicitudRepository.findById(solicitudId)
                 .orElseThrow(() -> new IllegalArgumentException("Solicitud no encontrada"));

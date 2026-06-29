@@ -39,6 +39,11 @@ public class SolicitudController {
         return ResponseEntity.ok(solicitudUseCase.crearSolicitud(request));
     }
 
+    @PatchMapping("/{id}/validar")
+    public ResponseEntity<SolicitudResponse> validar(@PathVariable UUID id) {
+        return ResponseEntity.ok(solicitudUseCase.validarSolicitud(id));
+    }
+
     @PatchMapping("/{id}/rechazar")
     public ResponseEntity<SolicitudResponse> rechazar(@PathVariable UUID id) {
         return ResponseEntity.ok(solicitudUseCase.rechazarSolicitud(id));
