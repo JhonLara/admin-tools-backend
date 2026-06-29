@@ -1,11 +1,11 @@
 server:
-  port: 8080
+  port: ${PORT:8080}
 
 spring:
   application:
     name: admin-tools-backend
   profiles:
-    active: dev
+    active: ${SPRING_PROFILES_ACTIVE:dev}
 
 ---
 
@@ -30,16 +30,49 @@ spring:
       enabled: true
       path: /h2-console
 
+jwt:
+  secret: ${JWT_SECRET:admin-tools-default-secret-key-2026-change-in-prod}
+  expiration: ${JWT_EXPIRATION:86400000}
+
 telegram:
   enabled: true
-  # Token del bot de Telegram (cambiar a variable de entorno en produccion)
-  bot-token: 8821379353:AAGuz__oVg9GqASXR_AjqtonUY959LtDvlk
-  # Chat ID del grupo de analistas (notificaciones de nuevas solicitudes desde modulo vendedores)
-  sales-chat-id: -5591464960
-  # Chat ID del grupo de aliados (notificaciones de observaciones)
-  # Primera iteracion: mismo grupo de prueba para todos los aliados
-  aliados-chat-id: -5430015388
+  bot-token: ${TELEGRAM_BOT_TOKEN:}
+  sales-chat-id: ${TELEGRAM_SALES_CHAT_ID:}
+  aliados-chat-id: ${TELEGRAM_ALIADOS_CHAT_ID:}
 
 logging:
   level:
     com.admintools: DEBUG
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: prod
+  datasource:
+    url: ${DATABASE_URL}
+    username: ${DATABASE_USER}
+    password: ${DATABASE_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+jwt:
+  secret: ${JWT_SECRET}
+  expiration: ${JWT_EXPIRATION:86400000}
+
+telegram:
+  enabled: true
+  bot-token: ${TELEGRAM_BOT_TOKEN}
+  sales-chat-id: ${TELEGRAM_SALES_CHAT_ID}
+  aliados-chat-id: ${TELEGRAM_ALIADOS_CHAT_ID}
+
+logging:
+  level:
+    com.admintools: INFO
