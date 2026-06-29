@@ -1,0 +1,45 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: admin-tools-backend
+  profiles:
+    active: dev
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: dev
+  datasource:
+    url: jdbc:h2:mem:admintoolsdb
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
+telegram:
+  enabled: true
+  # Token del bot de Telegram (cambiar a variable de entorno en produccion)
+  bot-token: 8821379353:AAGuz__oVg9GqASXR_AjqtonUY959LtDvlk
+  # Chat ID del grupo de analistas (notificaciones de nuevas solicitudes desde modulo vendedores)
+  sales-chat-id: -5591464960
+  # Chat ID del grupo de aliados (notificaciones de observaciones)
+  # Primera iteracion: mismo grupo de prueba para todos los aliados
+  aliados-chat-id: -5430015388
+
+logging:
+  level:
+    com.admintools: DEBUG
