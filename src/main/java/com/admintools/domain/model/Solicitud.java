@@ -31,7 +31,6 @@ public class Solicitud {
     @JoinColumn(name = "analista_id")
     private Analista analista;
 
-    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private EstadoSolicitud estado;
 
