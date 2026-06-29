@@ -112,6 +112,8 @@ public class SolicitudUseCase {
         solicitud.setEstado(EstadoSolicitud.RECHAZADA);
         solicitud = solicitudRepository.save(solicitud);
 
+        enviarNotificacionEstado(solicitud, "RECHAZADA");
+
         return mapToResponse(solicitud);
     }
 
@@ -122,7 +124,40 @@ public class SolicitudUseCase {
         solicitud.setEstado(EstadoSolicitud.APROBADA);
         solicitud = solicitudRepository.save(solicitud);
 
+        enviarNotificacionEstado(solicitud, "APROBADA");
+
         return mapToResponse(solicitud);
+    }
+
+    private void enviarNotificacionEstado(Solicitud solicitud, String estado) {
+        Aliado aliado = solicitud.getAliado();
+        String chatId = aliado.getTelegramChatId();
+        if (chatId == null || chatId.isBlank()) {
+            chatId = telegramProperties.getAliadosChatId();
+        }
+
+        String mensaje = String.format(
+                "SOLICITUD %s\nCliente: %s\nEmpresa: %s\nAliado: %s%s",
+                estado,
+                solicitud.getCedulaCliente(),
+                aliado.getEmpresa().getNombre(),
+                aliado.getNombre(),
+                "APROBADA".equals(estado) ? "\n\nSe puede enrolar" : ""
+        );
+
+        String respuesta = notificationPort.sendMessage(chatId, mensaje);
+
+        HistorialNotificacion historial = HistorialNotificacion.builder()
+                .solicitud(solicitud)
+                .canal(Canal.TELEGRAM)
+                .origen(Origen.ANALISTA)
+                .destino(Destino.GRUPO_ALIADO)
+                .mensajeEnviado(mensaje)
+                .estadoEnvio(respuesta.contains("error") || respuesta.startsWith("Error:") ? EstadoEnvio.ERROR : EstadoEnvio.ENVIADO)
+                .respuestaIntegracion(respuesta)
+                .build();
+
+        historialRepository.save(historial);
     }
 
     public SolicitudResponse finalizarSolicitud(UUID solicitudId) {
