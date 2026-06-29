@@ -4,6 +4,8 @@ server:
 spring:
   application:
     name: admin-tools-backend
+  jackson:
+    time-zone: ${TZ:America/Bogota}
   profiles:
     active: ${SPRING_PROFILES_ACTIVE:dev}
 
@@ -25,6 +27,8 @@ spring:
     properties:
       hibernate:
         format_sql: true
+        jdbc:
+          time_zone: ${TZ:America/Bogota}
   h2:
     console:
       enabled: true
@@ -51,9 +55,9 @@ spring:
     activate:
       on-profile: prod
   datasource:
-    url: ${DATABASE_URL}
-    username: ${DATABASE_USER}
-    password: ${DATABASE_PASSWORD}
+    url: jdbc:postgresql://${PGHOST:localhost}:${PGPORT:5432}/${PGDATABASE:admintools}?sslmode=require
+    username: ${PGUSER:postgres}
+    password: ${PGPASSWORD:postgres}
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
@@ -62,6 +66,8 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
+        jdbc:
+          time_zone: ${TZ:America/Bogota}
 
 jwt:
   secret: ${JWT_SECRET}
