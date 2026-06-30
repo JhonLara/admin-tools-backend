@@ -1,6 +1,7 @@
 package com.admintools.infrastructure.rest;
 
 import com.admintools.application.dto.SesionActivaResponse;
+import com.admintools.application.dto.SesionResumenResponse;
 import com.admintools.application.usecase.SesionActivaUseCase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -25,7 +26,15 @@ public class SesionController {
 
     @GetMapping("/conteo")
     public ResponseEntity<Map<String, Long>> conteo() {
-        return ResponseEntity.ok(Map.of("activas", sesionUseCase.contarActivas()));
+        return ResponseEntity.ok(Map.of(
+                "activas", sesionUseCase.contarActivas(),
+                "total", sesionUseCase.contarTotalSesiones()
+        ));
+    }
+
+    @GetMapping("/resumen")
+    public ResponseEntity<List<SesionResumenResponse>> resumen() {
+        return ResponseEntity.ok(sesionUseCase.listarResumenPorUsuario());
     }
 
     @DeleteMapping("/{id}")

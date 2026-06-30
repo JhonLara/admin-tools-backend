@@ -14,6 +14,9 @@ public interface SesionActivaRepositoryPort {
     List<SesionActiva> findAllByActivaTrue();
     List<SesionActiva> findAllByActivaTrueAndFechaExpiracionAfter(LocalDateTime fecha);
     long countByActivaTrueAndFechaExpiracionAfter(LocalDateTime fecha);
+    List<SesionActiva> findAll();
+    long count();
+    long countByUsername(String username);
     void deleteById(UUID id);
     void invalidateByToken(String token);
 }

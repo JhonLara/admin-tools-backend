@@ -13,4 +13,5 @@ public interface AnalistaRepositoryPort {
     List<Analista> findAll();
     List<Analista> findByEstadoOrderByOrdenAsignacionAsc(EstadoAnalista estado);
     Optional<Analista> findByCedula(String cedula);
+    void deleteById(UUID id);
 }

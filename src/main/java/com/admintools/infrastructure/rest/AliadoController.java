@@ -43,4 +43,10 @@ public class AliadoController {
     public ResponseEntity<AliadoResponse> cambiarEstado(@PathVariable UUID id) {
         return ResponseEntity.ok(aliadoUseCase.cambiarEstado(id));
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> eliminar(@PathVariable UUID id) {
+        aliadoUseCase.eliminar(id);
+        return ResponseEntity.ok().build();
+    }
 }

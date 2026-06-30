@@ -61,6 +61,10 @@ public class AliadoUseCase {
         return mapToResponse(aliadoRepository.save(aliado));
     }
 
+    public void eliminar(UUID id) {
+        aliadoRepository.deleteById(id);
+    }
+
     @Transactional(readOnly = true)
     public List<AliadoResponse> listar() {
         return aliadoRepository.findAll().stream()

@@ -40,4 +40,9 @@ public class AnalistaRepositoryAdapter implements AnalistaRepositoryPort {
     public Optional<Analista> findByCedula(String cedula) {
         return jpaRepository.findByCedula(cedula);
     }
+
+    @Override
+    public void deleteById(UUID id) {
+        jpaRepository.deleteById(id);
+    }
 }

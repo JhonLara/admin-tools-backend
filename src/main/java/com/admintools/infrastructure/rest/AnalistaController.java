@@ -43,4 +43,10 @@ public class AnalistaController {
     public ResponseEntity<AnalistaResponse> cambiarEstado(@PathVariable UUID id) {
         return ResponseEntity.ok(analistaUseCase.cambiarEstado(id));
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> eliminar(@PathVariable UUID id) {
+        analistaUseCase.eliminar(id);
+        return ResponseEntity.ok().build();
+    }
 }

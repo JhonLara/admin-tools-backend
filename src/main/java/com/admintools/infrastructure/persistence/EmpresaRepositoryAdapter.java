@@ -35,4 +35,9 @@ public class EmpresaRepositoryAdapter implements EmpresaRepositoryPort {
     public List<Empresa> findByEstado(EstadoEmpresa estado) {
         return jpaRepository.findByEstado(estado);
     }
+
+    @Override
+    public void deleteById(UUID id) {
+        jpaRepository.deleteById(id);
+    }
 }

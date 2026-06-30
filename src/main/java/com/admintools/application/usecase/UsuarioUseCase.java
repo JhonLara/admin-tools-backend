@@ -88,6 +88,10 @@ public class UsuarioUseCase {
         return mapToResponse(usuarioRepository.save(usuario));
     }
 
+    public void eliminar(UUID id) {
+        usuarioRepository.deleteById(id);
+    }
+
     @Transactional(readOnly = true)
     public List<UsuarioResponse> listar() {
         return usuarioRepository.findAll().stream()

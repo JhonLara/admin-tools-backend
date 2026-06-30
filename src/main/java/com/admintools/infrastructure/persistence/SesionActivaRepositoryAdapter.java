@@ -48,6 +48,21 @@ public class SesionActivaRepositoryAdapter implements SesionActivaRepositoryPort
     }
 
     @Override
+    public List<SesionActiva> findAll() {
+        return jpaRepository.findAll();
+    }
+
+    @Override
+    public long count() {
+        return jpaRepository.count();
+    }
+
+    @Override
+    public long countByUsername(String username) {
+        return jpaRepository.countByUsername(username);
+    }
+
+    @Override
     public void deleteById(UUID id) {
         jpaRepository.deleteById(id);
     }

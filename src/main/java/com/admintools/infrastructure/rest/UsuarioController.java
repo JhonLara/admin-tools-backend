@@ -43,4 +43,10 @@ public class UsuarioController {
     public ResponseEntity<UsuarioResponse> cambiarEstado(@PathVariable UUID id) {
         return ResponseEntity.ok(usuarioUseCase.cambiarEstado(id));
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> eliminar(@PathVariable UUID id) {
+        usuarioUseCase.eliminar(id);
+        return ResponseEntity.ok().build();
+    }
 }

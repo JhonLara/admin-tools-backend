@@ -40,4 +40,9 @@ public class AliadoRepositoryAdapter implements AliadoRepositoryPort {
     public List<Aliado> findAllByIdIn(List<UUID> ids) {
         return jpaRepository.findAllById(ids);
     }
+
+    @Override
+    public void deleteById(UUID id) {
+        jpaRepository.deleteById(id);
+    }
 }

@@ -1,1 +1,1 @@
-Fix GlobalExceptionHandler duplicado, integrar notificaciones Telegram  
+Agregar eliminar entidades resumen sesiones y notificaciones Telegram  

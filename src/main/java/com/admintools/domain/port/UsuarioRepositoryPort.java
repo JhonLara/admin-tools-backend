@@ -11,4 +11,5 @@ public interface UsuarioRepositoryPort {
     Optional<Usuario> findById(UUID id);
     Optional<Usuario> findByUsername(String username);
     List<Usuario> findAll();
+    void deleteById(UUID id);
 }

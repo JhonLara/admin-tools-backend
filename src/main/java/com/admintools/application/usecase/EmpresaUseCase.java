@@ -42,6 +42,10 @@ public class EmpresaUseCase {
         return mapToResponse(empresaRepository.save(empresa));
     }
 
+    public void eliminar(UUID id) {
+        empresaRepository.deleteById(id);
+    }
+
     @Transactional(readOnly = true)
     public List<EmpresaResponse> listar() {
         return empresaRepository.findAll().stream()

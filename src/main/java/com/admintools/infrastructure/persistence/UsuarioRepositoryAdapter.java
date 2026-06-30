@@ -34,4 +34,9 @@ public class UsuarioRepositoryAdapter implements UsuarioRepositoryPort {
     public List<Usuario> findAll() {
         return jpaRepository.findAll();
     }
+
+    @Override
+    public void deleteById(UUID id) {
+        jpaRepository.deleteById(id);
+    }
 }

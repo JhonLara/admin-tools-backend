@@ -51,6 +51,10 @@ public class AnalistaUseCase {
         return mapToResponse(analistaRepository.save(analista));
     }
 
+    public void eliminar(UUID id) {
+        analistaRepository.deleteById(id);
+    }
+
     @Transactional(readOnly = true)
     public List<AnalistaResponse> listar() {
         return analistaRepository.findAll().stream()

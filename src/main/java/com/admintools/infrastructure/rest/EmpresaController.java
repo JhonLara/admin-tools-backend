@@ -38,4 +38,10 @@ public class EmpresaController {
     public ResponseEntity<EmpresaResponse> cambiarEstado(@PathVariable UUID id) {
         return ResponseEntity.ok(empresaUseCase.cambiarEstado(id));
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> eliminar(@PathVariable UUID id) {
+        empresaUseCase.eliminar(id);
+        return ResponseEntity.ok().build();
+    }
 }
