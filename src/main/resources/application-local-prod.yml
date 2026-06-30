@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url: jdbc:postgresql://${PGHOST:localhost}:${PGPORT:5432}/${PGDATABASE:admintools}?sslmode=require
+    url: jdbc:postgresql://${PGHOST:reseau.proxy.rlwy.net}:${PGPORT:21296}/${PGDATABASE:railway}?sslmode=require
     username: ${PGUSER:postgres}
-    password: ${PGPASSWORD:}
+    password: ${PGPASSWORD:hzEwnedlxqWQhTHHocSoroDREOjtpCrC}
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
@@ -14,6 +14,13 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         jdbc:
           time_zone: ${TZ:America/Bogota}
+
+telegram:
+  enabled: true
+  bot-token: ${TELEGRAM_BOT_TOKEN:8821379353:AAGuz__oVg9GqASXR_AjqtonUY959LtDvlk}
+  sales-chat-id: ${TELEGRAM_SALES_CHAT_ID:-5591464960}
+  aliados-chat-id: ${TELEGRAM_ALIADOS_CHAT_ID:-5430015388}
+  errors-chat-id: -5463513988
 
 logging:
   level:
