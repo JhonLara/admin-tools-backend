@@ -21,6 +21,7 @@ public class AsignacionService {
     private final AnalistaRepositoryPort analistaRepository;
     private final SolicitudRepositoryPort solicitudRepository;
     private final HorarioAnalistaRepositoryPort horarioRepository;
+    private final ErrorNotificationService errorNotificationService;
 
     public Optional<Analista> asignarAnalistaDisponible() {
         List<Analista> analistasActivos = analistaRepository.findByEstadoOrderByOrdenAsignacionAsc(EstadoAnalista.ACTIVO);
@@ -82,9 +83,15 @@ public class AsignacionService {
     }
 
     public synchronized Solicitud asignarSolicitud(Solicitud solicitud) {
-        Analista analista = asignarAnalistaDisponible()
-                .orElseThrow(() -> new IllegalStateException("No hay analistas disponibles para asignar la solicitud"));
+        Optional<Analista> analistaOpt = asignarAnalistaDisponible();
+        if (analistaOpt.isEmpty()) {
+            errorNotificationService.notifyInconsistency(
+                    "No hay analistas disponibles para asignar la solicitud del cliente " + solicitud.getCedulaCliente()
+            );
+            throw new IllegalStateException("No hay analistas disponibles para asignar la solicitud");
+        }
 
+        Analista analista = analistaOpt.get();
         solicitud.setAnalista(analista);
         solicitud.setEstado(EstadoSolicitud.ASIGNADA);
         solicitud.setFechaAsignacion(LocalDateTime.now());

@@ -12,4 +12,5 @@ public class TelegramProperties {
     private String botToken;
     private String salesChatId;
     private String aliadosChatId;
+    private String errorsChatId;
 }
