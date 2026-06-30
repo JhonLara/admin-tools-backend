@@ -1,1 +1,1 @@
-Agregar endpoint test y notificar creacion de usuarios en Telegram  
+Fix GlobalExceptionHandler duplicado, integrar notificaciones Telegram  
