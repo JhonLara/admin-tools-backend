@@ -63,9 +63,10 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/solicitudes/*/notificar-observacion").hasAnyAuthority("ROLE_ANALISTA", "ROLE_ADMINISTRADOR", "ROLE_SUPER_ADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/solicitudes/mis-solicitudes").authenticated()
 
-                        // Super admin: eliminar solicitudes y ver sesiones
+                        // Super admin: eliminar solicitudes, ver sesiones y testear
                         .requestMatchers(HttpMethod.DELETE, "/api/solicitudes/*").hasAnyAuthority("ROLE_SUPER_ADMIN")
                         .requestMatchers("/api/sesiones", "/api/sesiones/**").hasAnyAuthority("ROLE_SUPER_ADMIN")
+                        .requestMatchers("/api/test/**").hasAnyAuthority("ROLE_SUPER_ADMIN")
 
                         // Configuración de grupos Telegram por aliado+empresa
                         .requestMatchers("/api/aliado-empresa-telegram").hasAnyAuthority("ROLE_ADMINISTRADOR", "ROLE_SUPER_ADMIN")

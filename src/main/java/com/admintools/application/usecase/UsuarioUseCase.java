@@ -4,7 +4,9 @@ import com.admintools.application.dto.UsuarioRequest;
 import com.admintools.application.dto.UsuarioResponse;
 import com.admintools.domain.model.EstadoUsuario;
 import com.admintools.domain.model.Usuario;
+import com.admintools.domain.port.NotificationPort;
 import com.admintools.domain.port.UsuarioRepositoryPort;
+import com.admintools.infrastructure.config.TelegramProperties;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -21,6 +23,8 @@ public class UsuarioUseCase {
 
     private final UsuarioRepositoryPort usuarioRepository;
     private final PasswordEncoder passwordEncoder;
+    private final NotificationPort notificationPort;
+    private final TelegramProperties telegramProperties;
 
     public UsuarioResponse crear(UsuarioRequest request) {
         if (usuarioRepository.findByUsername(request.getUsername()).isPresent()) {
@@ -36,7 +40,29 @@ public class UsuarioUseCase {
                 .estado(EstadoUsuario.ACTIVO)
                 .build();
 
-        return mapToResponse(usuarioRepository.save(usuario));
+        Usuario guardado = usuarioRepository.save(usuario);
+
+        String chatId = telegramProperties.getErrorsChatId();
+        if (chatId != null && !chatId.isBlank()) {
+            String mensaje = String.format(
+                    "✅ *NUEVO USUARIO CREADO*\\n\\n" +
+                    "*Usuario:* %s\\n" +
+                    "*Nombre:* %s\\n" +
+                    "*Rol:* %s\\n" +
+                    "*Creado por:* %s",
+                    guardado.getUsername(),
+                    guardado.getNombre(),
+                    guardado.getRol().name(),
+                    "Sistema"
+            );
+            try {
+                notificationPort.sendMessage(chatId, mensaje);
+            } catch (Exception e) {
+                // No bloquear la creación si falla la notificación
+            }
+        }
+
+        return mapToResponse(guardado);
     }
 
     public UsuarioResponse actualizar(UUID id, UsuarioRequest request) {
