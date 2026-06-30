@@ -75,6 +75,11 @@ public class SolicitudController {
         return ResponseEntity.ok(solicitudUseCase.marcarFirmaRecibida(id));
     }
 
+    @PatchMapping("/{id}/revisado")
+    public ResponseEntity<SolicitudResponse> marcarRevisado(@PathVariable UUID id) {
+        return ResponseEntity.ok(solicitudUseCase.marcarRevisado(id));
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminar(@PathVariable UUID id) {
         solicitudUseCase.eliminarSolicitud(id);

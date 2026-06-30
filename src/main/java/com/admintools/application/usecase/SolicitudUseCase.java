@@ -219,6 +219,7 @@ public class SolicitudUseCase {
     @Transactional(readOnly = true)
     public List<SolicitudResponse> listarSolicitudes() {
         return solicitudRepository.findAll().stream()
+                .sorted((a, b) -> b.getFechaCreacion().compareTo(a.getFechaCreacion()))
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
     }
@@ -227,6 +228,7 @@ public class SolicitudUseCase {
     public List<SolicitudResponse> listarSolicitudesPorAnalista(UUID analistaId) {
         return solicitudRepository.findByAnalistaId(analistaId).stream()
                 .filter(s -> s.getEstado() != EstadoSolicitud.APROBADA && s.getEstado() != EstadoSolicitud.RECHAZADA)
+                .sorted((a, b) -> b.getFechaCreacion().compareTo(a.getFechaCreacion()))
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
     }
@@ -234,6 +236,7 @@ public class SolicitudUseCase {
     @Transactional(readOnly = true)
     public List<SolicitudResponse> listarSolicitudesPorVendedor(String username) {
         return solicitudRepository.findByCreadoPor(username).stream()
+                .sorted((a, b) -> b.getFechaCreacion().compareTo(a.getFechaCreacion()))
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
     }
@@ -247,6 +250,43 @@ public class SolicitudUseCase {
         }
 
         solicitud.setEstado(EstadoSolicitud.FIRMA_RECIBIDA);
+        solicitud = solicitudRepository.save(solicitud);
+
+        return mapToResponse(solicitud);
+    }
+
+    public SolicitudResponse marcarRevisado(UUID solicitudId) {
+        Solicitud solicitud = solicitudRepository.findById(solicitudId)
+                .orElseThrow(() -> new IllegalArgumentException("Solicitud no encontrada"));
+
+        if (solicitud.getEstado() != EstadoSolicitud.NOTIFICADA) {
+            throw new IllegalArgumentException("La solicitud debe estar en estado NOTIFICADA para marcar como revisada");
+        }
+
+        Aliado aliado = solicitud.getAliado();
+
+        String mensaje = String.format(
+                "El vendedor ha revisado la observación\nCliente: %s\nEmpresa: %s\nAliado: %s\nEstado: En proceso",
+                solicitud.getCedulaCliente(),
+                solicitud.getEmpresa().getNombre(),
+                aliado.getNombre()
+        );
+
+        String respuesta = notificationPort.sendMessage(telegramProperties.getSalesChatId(), mensaje);
+
+        HistorialNotificacion historial = HistorialNotificacion.builder()
+                .solicitud(solicitud)
+                .canal(Canal.TELEGRAM)
+                .origen(Origen.VENDEDOR)
+                .destino(Destino.GRUPO_ANALISTAS)
+                .mensajeEnviado(mensaje)
+                .estadoEnvio(respuesta.contains("error") || respuesta.startsWith("Error:") ? EstadoEnvio.ERROR : EstadoEnvio.ENVIADO)
+                .respuestaIntegracion(respuesta)
+                .build();
+
+        historialRepository.save(historial);
+
+        solicitud.setEstado(EstadoSolicitud.EN_PROCESO);
         solicitud = solicitudRepository.save(solicitud);
 
         return mapToResponse(solicitud);

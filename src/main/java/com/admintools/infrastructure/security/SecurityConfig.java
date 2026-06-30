@@ -54,6 +54,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/solicitudes").hasAnyAuthority("ROLE_VENDEDOR", "ROLE_ADMINISTRADOR", "ROLE_SUPER_ADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/solicitudes/mis-solicitudes-vendedor").hasAnyAuthority("ROLE_VENDEDOR", "ROLE_ADMINISTRADOR", "ROLE_SUPER_ADMIN")
                         .requestMatchers(HttpMethod.PATCH, "/api/solicitudes/*/firma-recibida").hasAnyAuthority("ROLE_VENDEDOR", "ROLE_ADMINISTRADOR", "ROLE_SUPER_ADMIN")
+                        .requestMatchers(HttpMethod.PATCH, "/api/solicitudes/*/revisado").hasAnyAuthority("ROLE_VENDEDOR", "ROLE_ADMINISTRADOR", "ROLE_SUPER_ADMIN")
 
                         // Analista: finalizar, notificar, rechazar y aprobar
                         .requestMatchers(HttpMethod.PATCH, "/api/solicitudes/*/finalizar").hasAnyAuthority("ROLE_ANALISTA", "ROLE_ADMINISTRADOR", "ROLE_SUPER_ADMIN")
