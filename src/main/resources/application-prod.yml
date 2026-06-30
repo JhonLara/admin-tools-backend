@@ -9,6 +9,9 @@ spring:
         jdbc:
           time_zone: ${TZ:America/Bogota}
 
+telegram:
+  errors-chat-id: "-5463513988"
+
 logging:
   level:
     com.admintools: INFO

@@ -18,6 +18,9 @@ spring:
       enabled: true
       path: /h2-console
 
+telegram:
+  errors-chat-id: "-5463513988"
+
 logging:
   level:
     com.admintools: DEBUG
