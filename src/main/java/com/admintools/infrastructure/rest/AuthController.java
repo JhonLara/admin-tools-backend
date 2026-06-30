@@ -6,6 +6,7 @@ import com.admintools.application.dto.MeResponse;
 import com.admintools.application.usecase.AuthUseCase;
 import com.admintools.domain.model.Usuario;
 import com.admintools.domain.port.UsuarioRepositoryPort;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -24,8 +25,13 @@ public class AuthController {
     private final UsuarioRepositoryPort usuarioRepository;
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request) {
-        return ResponseEntity.ok(authUseCase.login(request));
+    public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request, HttpServletRequest httpRequest) {
+        String ip = httpRequest.getHeader("X-Forwarded-For");
+        if (ip == null || ip.isBlank()) {
+            ip = httpRequest.getRemoteAddr();
+        }
+        String userAgent = httpRequest.getHeader("User-Agent");
+        return ResponseEntity.ok(authUseCase.login(request, ip, userAgent));
     }
 
     @GetMapping("/me")

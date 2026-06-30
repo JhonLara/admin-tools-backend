@@ -1,0 +1,1 @@
+Agregar control de sesiones y sincronizacion en asignacion  

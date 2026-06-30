@@ -51,6 +51,10 @@ public class JwtUtil {
         return analistaId != null ? UUID.fromString(analistaId) : null;
     }
 
+    public long getExpirationSeconds() {
+        return expiration / 1000;
+    }
+
     public boolean validateToken(String token) {
         try {
             parseToken(token);

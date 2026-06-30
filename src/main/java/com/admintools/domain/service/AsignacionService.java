@@ -81,7 +81,7 @@ public class AsignacionService {
         };
     }
 
-    public Solicitud asignarSolicitud(Solicitud solicitud) {
+    public synchronized Solicitud asignarSolicitud(Solicitud solicitud) {
         Analista analista = asignarAnalistaDisponible()
                 .orElseThrow(() -> new IllegalStateException("No hay analistas disponibles para asignar la solicitud"));
 
