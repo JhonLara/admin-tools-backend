@@ -22,18 +22,35 @@ public class SolicitudUseCase {
 
     private final SolicitudRepositoryPort solicitudRepository;
     private final AliadoRepositoryPort aliadoRepository;
+    private final EmpresaRepositoryPort empresaRepository;
+    private final AliadoEmpresaTelegramRepositoryPort aliadoEmpresaTelegramRepository;
     private final HistorialNotificacionRepositoryPort historialRepository;
     private final AsignacionService asignacionService;
     private final NotificationPort notificationPort;
     private final TelegramProperties telegramProperties;
 
-    public SolicitudResponse crearSolicitud(CrearSolicitudRequest request) {
+    private String obtenerChatId(Aliado aliado, Empresa empresa) {
+        return aliadoEmpresaTelegramRepository.findByAliadoIdAndEmpresaId(aliado.getId(), empresa.getId())
+                .map(AliadoEmpresaTelegram::getTelegramChatId)
+                .filter(chatId -> chatId != null && !chatId.isBlank())
+                .orElseGet(() -> {
+                    String chatId = aliado.getTelegramChatId();
+                    return (chatId != null && !chatId.isBlank()) ? chatId : telegramProperties.getAliadosChatId();
+                });
+    }
+
+    public SolicitudResponse crearSolicitud(CrearSolicitudRequest request, String creadoPor) {
         Aliado aliado = aliadoRepository.findById(request.getAliadoId())
                 .orElseThrow(() -> new IllegalArgumentException("Aliado no encontrado"));
+
+        Empresa empresa = empresaRepository.findById(request.getEmpresaId())
+                .orElseThrow(() -> new IllegalArgumentException("Empresa no encontrada"));
 
         Solicitud solicitud = Solicitud.builder()
                 .cedulaCliente(request.getCedulaCliente())
                 .aliado(aliado)
+                .empresa(empresa)
+                .creadoPor(creadoPor)
                 .estado(EstadoSolicitud.CREADA)
                 .build();
 
@@ -44,7 +61,7 @@ public class SolicitudUseCase {
         String mensaje = String.format(
                 "Nueva solicitud asignada\nCliente: %s\nEmpresa: %s\nAliado: %s\nAnalista: %s",
                 solicitud.getCedulaCliente(),
-                aliado.getEmpresa().getNombre(),
+                solicitud.getEmpresa().getNombre(),
                 aliado.getNombre(),
                 solicitud.getAnalista().getNombre()
         );
@@ -71,15 +88,12 @@ public class SolicitudUseCase {
                 .orElseThrow(() -> new IllegalArgumentException("Solicitud no encontrada"));
 
         Aliado aliado = solicitud.getAliado();
-        String chatId = aliado.getTelegramChatId();
-        if (chatId == null || chatId.isBlank()) {
-            chatId = telegramProperties.getAliadosChatId();
-        }
+        String chatId = obtenerChatId(aliado, solicitud.getEmpresa());
 
         String mensaje = String.format(
                 "Se registró una observación en tu solicitud\nCliente: %s\nEmpresa: %s\nAliado: %s\nPor favor revisar",
                 solicitud.getCedulaCliente(),
-                aliado.getEmpresa().getNombre(),
+                solicitud.getEmpresa().getNombre(),
                 aliado.getNombre()
         );
 
@@ -122,15 +136,12 @@ public class SolicitudUseCase {
                 .orElseThrow(() -> new IllegalArgumentException("Solicitud no encontrada"));
 
         Aliado aliado = solicitud.getAliado();
-        String chatId = aliado.getTelegramChatId();
-        if (chatId == null || chatId.isBlank()) {
-            chatId = telegramProperties.getAliadosChatId();
-        }
+        String chatId = obtenerChatId(aliado, solicitud.getEmpresa());
 
         String mensaje = String.format(
                 "Solicitud validada\ncliente: %s\nEmpresa: %s\nAliado: %s\n\nSe ha enviado enlace para firma digital📱. \n\nRequisitos:\n•Foto Legible 📸: Asegúrese de que la foto sea clara y visible, con el rostro descubierto:\n•Con cédula en mano visible y legible 🪪\n•No usar gafas 🕶️\n•No usar gorras o sombreros 🧢\n•No usar mascarillas o bufandas 😷\n\nProceso de Firma 📝\nUna vez que el cliente haya firmado el documento, confirmar al analista para aprobación de la solicitud y autorización del enrolamiento y entrega del equipo.",
                 solicitud.getCedulaCliente(),
-                aliado.getEmpresa().getNombre(),
+                solicitud.getEmpresa().getNombre(),
                 aliado.getNombre()
         );
 
@@ -168,16 +179,13 @@ public class SolicitudUseCase {
 
     private void enviarNotificacionEstado(Solicitud solicitud, String estado) {
         Aliado aliado = solicitud.getAliado();
-        String chatId = aliado.getTelegramChatId();
-        if (chatId == null || chatId.isBlank()) {
-            chatId = telegramProperties.getAliadosChatId();
-        }
+        String chatId = obtenerChatId(aliado, solicitud.getEmpresa());
 
         String mensaje = String.format(
                 "SOLICITUD %s\nCliente: %s\nEmpresa: %s\nAliado: %s%s",
                 estado,
                 solicitud.getCedulaCliente(),
-                aliado.getEmpresa().getNombre(),
+                solicitud.getEmpresa().getNombre(),
                 aliado.getNombre(),
                 "APROBADA".equals(estado) ? "\n\nSe puede enrolar" : ""
         );
@@ -218,8 +226,30 @@ public class SolicitudUseCase {
     @Transactional(readOnly = true)
     public List<SolicitudResponse> listarSolicitudesPorAnalista(UUID analistaId) {
         return solicitudRepository.findByAnalistaId(analistaId).stream()
+                .filter(s -> s.getEstado() != EstadoSolicitud.APROBADA && s.getEstado() != EstadoSolicitud.RECHAZADA)
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public List<SolicitudResponse> listarSolicitudesPorVendedor(String username) {
+        return solicitudRepository.findByCreadoPor(username).stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
+    }
+
+    public SolicitudResponse marcarFirmaRecibida(UUID solicitudId) {
+        Solicitud solicitud = solicitudRepository.findById(solicitudId)
+                .orElseThrow(() -> new IllegalArgumentException("Solicitud no encontrada"));
+
+        if (solicitud.getEstado() != EstadoSolicitud.VALIDADA) {
+            throw new IllegalArgumentException("La solicitud debe estar en estado VALIDADA para marcar firma recibida");
+        }
+
+        solicitud.setEstado(EstadoSolicitud.FIRMA_RECIBIDA);
+        solicitud = solicitudRepository.save(solicitud);
+
+        return mapToResponse(solicitud);
     }
 
     @Transactional(readOnly = true)
@@ -227,6 +257,10 @@ public class SolicitudUseCase {
         return solicitudRepository.findById(id)
                 .map(this::mapToResponse)
                 .orElseThrow(() -> new IllegalArgumentException("Solicitud no encontrada"));
+    }
+
+    public void eliminarSolicitud(UUID id) {
+        solicitudRepository.deleteById(id);
     }
 
     private SolicitudResponse mapToResponse(Solicitud s) {
@@ -237,12 +271,17 @@ public class SolicitudUseCase {
                         .id(s.getAliado().getId())
                         .nombre(s.getAliado().getNombre())
                         .build())
+                .empresa(SolicitudResponse.EmpresaResumen.builder()
+                        .id(s.getEmpresa().getId())
+                        .nombre(s.getEmpresa().getNombre())
+                        .build())
                 .analista(s.getAnalista() != null ? SolicitudResponse.AnalistaResumen.builder()
                         .id(s.getAnalista().getId())
                         .nombre(s.getAnalista().getNombre())
                         .cedula(s.getAnalista().getCedula())
                         .build() : null)
                 .estado(s.getEstado())
+                .creadoPor(s.getCreadoPor())
                 .fechaCreacion(s.getFechaCreacion())
                 .fechaAsignacion(s.getFechaAsignacion())
                 .fechaFinalizacion(s.getFechaFinalizacion())

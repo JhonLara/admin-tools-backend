@@ -14,8 +14,10 @@ public interface SolicitudRepositoryPort {
     List<Solicitud> findByEstado(EstadoSolicitud estado);
     List<Solicitud> findByAnalistaId(UUID analistaId);
     List<Solicitud> findByAnalistaIdAndEstadoIn(UUID analistaId, List<EstadoSolicitud> estados);
+    List<Solicitud> findByCreadoPor(String creadoPor);
     long countByEstado(EstadoSolicitud estado);
     long count();
     List<Solicitud> findTop10ByOrderByFechaCreacionDesc();
     Optional<Solicitud> findFirstByAnalistaIsNotNullOrderByFechaAsignacionDesc();
+    void deleteById(UUID id);
 }

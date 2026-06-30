@@ -6,6 +6,7 @@ public enum EstadoSolicitud {
     NOTIFICADA,
     EN_PROCESO,
     VALIDADA,
+    FIRMA_RECIBIDA,
     RECHAZADA,
     APROBADA,
     FINALIZADA,

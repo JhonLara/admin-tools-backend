@@ -47,6 +47,11 @@ public class SolicitudRepositoryAdapter implements SolicitudRepositoryPort {
     }
 
     @Override
+    public List<Solicitud> findByCreadoPor(String creadoPor) {
+        return jpaRepository.findByCreadoPor(creadoPor);
+    }
+
+    @Override
     public long countByEstado(EstadoSolicitud estado) {
         return jpaRepository.countByEstado(estado);
     }
@@ -64,5 +69,10 @@ public class SolicitudRepositoryAdapter implements SolicitudRepositoryPort {
     @Override
     public Optional<Solicitud> findFirstByAnalistaIsNotNullOrderByFechaAsignacionDesc() {
         return jpaRepository.findFirstByAnalistaIsNotNullOrderByFechaAsignacionDesc();
+    }
+
+    @Override
+    public void deleteById(UUID id) {
+        jpaRepository.deleteById(id);
     }
 }

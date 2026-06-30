@@ -28,11 +28,18 @@ public class Solicitud {
     private Aliado aliado;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "empresa_id", nullable = false)
+    private Empresa empresa;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "analista_id")
     private Analista analista;
 
     @Column(nullable = false)
     private EstadoSolicitud estado;
+
+    @Column(name = "creado_por")
+    private String creadoPor;
 
     @CreationTimestamp
     @Column(name = "fecha_creacion", nullable = false, updatable = false)

@@ -41,21 +41,21 @@ public class DataInitializer {
             empresa2 = empresaRepo.save(empresa2);
 
             // Aliados de UNO+1 INVERSIONES
-            Aliado a1 = Aliado.builder().nombre("BLEST TECNOLOGY").empresa(empresa1).telegramChatId("-5539380516").estado(EstadoAliado.ACTIVO).build();
-            Aliado a2 = Aliado.builder().nombre("CREDI PHONE").empresa(empresa1).telegramChatId("-5542679471").estado(EstadoAliado.ACTIVO).build();
-            Aliado a3 = Aliado.builder().nombre("HTC").empresa(empresa1).telegramChatId("-5504097691").estado(EstadoAliado.ACTIVO).build();
-            Aliado a4 = Aliado.builder().nombre("SUR CEL NARIÑO").empresa(empresa1).telegramChatId("-5355528411").estado(EstadoAliado.ACTIVO).build();
-            Aliado a5 = Aliado.builder().nombre("TECNOKELLY").empresa(empresa1).telegramChatId("-5503954638").estado(EstadoAliado.ACTIVO).build();
+            Aliado a1 = Aliado.builder().nombre("BLEST TECNOLOGY").empresa(empresa1).empresas(List.of(empresa1)).telegramChatId("-5539380516").estado(EstadoAliado.ACTIVO).build();
+            Aliado a2 = Aliado.builder().nombre("CREDI PHONE").empresa(empresa1).empresas(List.of(empresa1)).telegramChatId("-5542679471").estado(EstadoAliado.ACTIVO).build();
+            Aliado a3 = Aliado.builder().nombre("HTC").empresa(empresa1).empresas(List.of(empresa1)).telegramChatId("-5504097691").estado(EstadoAliado.ACTIVO).build();
+            Aliado a4 = Aliado.builder().nombre("SUR CEL NARIÑO").empresa(empresa1).empresas(List.of(empresa1)).telegramChatId("-5355528411").estado(EstadoAliado.ACTIVO).build();
+            Aliado a5 = Aliado.builder().nombre("TECNOKELLY").empresa(empresa1).empresas(List.of(empresa1)).telegramChatId("-5503954638").estado(EstadoAliado.ACTIVO).build();
 
             // Aliados de ESCALANDO INVERSIONES
-            Aliado a6 = Aliado.builder().nombre("ALVARO ANDRES SOLANO").empresa(empresa2).telegramChatId("-5250645120").estado(EstadoAliado.ACTIVO).build();
-            Aliado a7 = Aliado.builder().nombre("CELESSENCE STORE").empresa(empresa2).telegramChatId("-5507132468").estado(EstadoAliado.ACTIVO).build();
-            Aliado a8 = Aliado.builder().nombre("GB CELL").empresa(empresa2).telegramChatId("-5579370030").estado(EstadoAliado.ACTIVO).build();
-            Aliado a9 = Aliado.builder().nombre("JFG COMUNICACIONES").empresa(empresa2).telegramChatId("-5506433015").estado(EstadoAliado.ACTIVO).build();
-            Aliado a10 = Aliado.builder().nombre("MIRROR ENERGY S&I S.A.S.").empresa(empresa2).telegramChatId("-5478113912").estado(EstadoAliado.ACTIVO).build();
-            Aliado a11 = Aliado.builder().nombre("QIERO").empresa(empresa2).telegramChatId("-5426380900").estado(EstadoAliado.ACTIVO).build();
-            Aliado a12 = Aliado.builder().nombre("SMARTPHONE CENTER").empresa(empresa2).telegramChatId("-5339562528").estado(EstadoAliado.ACTIVO).build();
-            Aliado a13 = Aliado.builder().nombre("TECNOBRO´S").empresa(empresa2).telegramChatId("-5472340383").estado(EstadoAliado.ACTIVO).build();
+            Aliado a6 = Aliado.builder().nombre("ALVARO ANDRES SOLANO").empresa(empresa2).empresas(List.of(empresa2)).telegramChatId("-5250645120").estado(EstadoAliado.ACTIVO).build();
+            Aliado a7 = Aliado.builder().nombre("CELESSENCE STORE").empresa(empresa2).empresas(List.of(empresa2)).telegramChatId("-5507132468").estado(EstadoAliado.ACTIVO).build();
+            Aliado a8 = Aliado.builder().nombre("GB CELL").empresa(empresa2).empresas(List.of(empresa2)).telegramChatId("-5579370030").estado(EstadoAliado.ACTIVO).build();
+            Aliado a9 = Aliado.builder().nombre("JFG COMUNICACIONES").empresa(empresa2).empresas(List.of(empresa2)).telegramChatId("-5506433015").estado(EstadoAliado.ACTIVO).build();
+            Aliado a10 = Aliado.builder().nombre("MIRROR ENERGY S&I S.A.S.").empresa(empresa2).empresas(List.of(empresa2)).telegramChatId("-5478113912").estado(EstadoAliado.ACTIVO).build();
+            Aliado a11 = Aliado.builder().nombre("QIERO").empresa(empresa2).empresas(List.of(empresa2)).telegramChatId("-5426380900").estado(EstadoAliado.ACTIVO).build();
+            Aliado a12 = Aliado.builder().nombre("SMARTPHONE CENTER").empresa(empresa2).empresas(List.of(empresa2)).telegramChatId("-5339562528").estado(EstadoAliado.ACTIVO).build();
+            Aliado a13 = Aliado.builder().nombre("TECNOBRO´S").empresa(empresa2).empresas(List.of(empresa2)).telegramChatId("-5472340383").estado(EstadoAliado.ACTIVO).build();
 
             aliadoRepo.save(a1);
             aliadoRepo.save(a2);

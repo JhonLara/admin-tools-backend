@@ -6,6 +6,8 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -27,6 +29,15 @@ public class Aliado {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "empresa_id", nullable = false)
     private Empresa empresa;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "aliado_empresas",
+            joinColumns = @JoinColumn(name = "aliado_id"),
+            inverseJoinColumns = @JoinColumn(name = "empresa_id")
+    )
+    @Builder.Default
+    private List<Empresa> empresas = new ArrayList<>();
 
     @Column(name = "telegram_chat_id")
     private String telegramChatId;

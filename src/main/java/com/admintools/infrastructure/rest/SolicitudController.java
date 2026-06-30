@@ -6,6 +6,7 @@ import com.admintools.application.usecase.SolicitudUseCase;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -29,14 +30,19 @@ public class SolicitudController {
         return ResponseEntity.ok(solicitudUseCase.listarSolicitudesPorAnalista(analistaId));
     }
 
+    @GetMapping("/mis-solicitudes-vendedor")
+    public ResponseEntity<List<SolicitudResponse>> listarPorVendedor(Authentication authentication) {
+        return ResponseEntity.ok(solicitudUseCase.listarSolicitudesPorVendedor(authentication.getName()));
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<SolicitudResponse> obtener(@PathVariable UUID id) {
         return ResponseEntity.ok(solicitudUseCase.obtenerSolicitud(id));
     }
 
     @PostMapping
-    public ResponseEntity<SolicitudResponse> crear(@Valid @RequestBody CrearSolicitudRequest request) {
-        return ResponseEntity.ok(solicitudUseCase.crearSolicitud(request));
+    public ResponseEntity<SolicitudResponse> crear(@Valid @RequestBody CrearSolicitudRequest request, Authentication authentication) {
+        return ResponseEntity.ok(solicitudUseCase.crearSolicitud(request, authentication.getName()));
     }
 
     @PatchMapping("/{id}/validar")
@@ -62,5 +68,16 @@ public class SolicitudController {
     @PostMapping("/{id}/notificar-observacion")
     public ResponseEntity<SolicitudResponse> notificarObservacion(@PathVariable UUID id) {
         return ResponseEntity.ok(solicitudUseCase.notificarObservacion(id));
+    }
+
+    @PatchMapping("/{id}/firma-recibida")
+    public ResponseEntity<SolicitudResponse> marcarFirmaRecibida(@PathVariable UUID id) {
+        return ResponseEntity.ok(solicitudUseCase.marcarFirmaRecibida(id));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> eliminar(@PathVariable UUID id) {
+        solicitudUseCase.eliminarSolicitud(id);
+        return ResponseEntity.noContent().build();
     }
 }

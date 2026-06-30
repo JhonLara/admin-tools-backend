@@ -13,4 +13,7 @@ public class CrearSolicitudRequest {
 
     @NotNull
     private UUID aliadoId;
+
+    @NotNull
+    private UUID empresaId;
 }

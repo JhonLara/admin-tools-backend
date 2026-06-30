@@ -50,8 +50,10 @@ public class SecurityConfig {
                         // Gestión de usuarios: solo super admin
                         .requestMatchers("/api/usuarios", "/api/usuarios/**").hasAnyAuthority("ROLE_SUPER_ADMIN")
 
-                        // Vendedor: crear solicitudes
+                        // Vendedor: crear solicitudes y ver sus solicitudes
                         .requestMatchers(HttpMethod.POST, "/api/solicitudes").hasAnyAuthority("ROLE_VENDEDOR", "ROLE_ADMINISTRADOR", "ROLE_SUPER_ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/solicitudes/mis-solicitudes-vendedor").hasAnyAuthority("ROLE_VENDEDOR", "ROLE_ADMINISTRADOR", "ROLE_SUPER_ADMIN")
+                        .requestMatchers(HttpMethod.PATCH, "/api/solicitudes/*/firma-recibida").hasAnyAuthority("ROLE_VENDEDOR", "ROLE_ADMINISTRADOR", "ROLE_SUPER_ADMIN")
 
                         // Analista: finalizar, notificar, rechazar y aprobar
                         .requestMatchers(HttpMethod.PATCH, "/api/solicitudes/*/finalizar").hasAnyAuthority("ROLE_ANALISTA", "ROLE_ADMINISTRADOR", "ROLE_SUPER_ADMIN")
@@ -59,6 +61,12 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PATCH, "/api/solicitudes/*/aprobar").hasAnyAuthority("ROLE_ANALISTA", "ROLE_ADMINISTRADOR", "ROLE_SUPER_ADMIN")
                         .requestMatchers(HttpMethod.POST, "/api/solicitudes/*/notificar-observacion").hasAnyAuthority("ROLE_ANALISTA", "ROLE_ADMINISTRADOR", "ROLE_SUPER_ADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/solicitudes/mis-solicitudes").authenticated()
+
+                        // Super admin: eliminar solicitudes
+                        .requestMatchers(HttpMethod.DELETE, "/api/solicitudes/*").hasAnyAuthority("ROLE_SUPER_ADMIN")
+
+                        // Configuración de grupos Telegram por aliado+empresa
+                        .requestMatchers("/api/aliado-empresa-telegram").hasAnyAuthority("ROLE_ADMINISTRADOR", "ROLE_SUPER_ADMIN")
 
                         // Gestión de entidades: solo admin y super admin
                         .requestMatchers(HttpMethod.POST, "/api/empresas", "/api/aliados", "/api/analistas", "/api/horarios-analistas").hasAnyAuthority("ROLE_ADMINISTRADOR", "ROLE_SUPER_ADMIN")

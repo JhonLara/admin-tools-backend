@@ -13,8 +13,10 @@ public class SolicitudResponse {
     private UUID id;
     private String cedulaCliente;
     private AliadoResumen aliado;
+    private EmpresaResumen empresa;
     private AnalistaResumen analista;
     private EstadoSolicitud estado;
+    private String creadoPor;
     private LocalDateTime fechaCreacion;
     private LocalDateTime fechaAsignacion;
     private LocalDateTime fechaFinalizacion;
@@ -22,6 +24,13 @@ public class SolicitudResponse {
     @Data
     @Builder
     public static class AliadoResumen {
+        private UUID id;
+        private String nombre;
+    }
+
+    @Data
+    @Builder
+    public static class EmpresaResumen {
         private UUID id;
         private String nombre;
     }

@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Data
@@ -13,6 +14,7 @@ public class AliadoResponse {
     private UUID id;
     private String nombre;
     private EmpresaResumen empresa;
+    private List<EmpresaResumen> empresas;
     private String telegramChatId;
     private EstadoAliado estado;
     private LocalDateTime fechaCreacion;

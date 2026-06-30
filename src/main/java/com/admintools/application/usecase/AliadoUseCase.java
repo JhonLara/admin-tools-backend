@@ -3,6 +3,7 @@ package com.admintools.application.usecase;
 import com.admintools.application.dto.AliadoRequest;
 import com.admintools.application.dto.AliadoResponse;
 import com.admintools.domain.model.Aliado;
+import com.admintools.domain.model.Empresa;
 import com.admintools.domain.model.EstadoAliado;
 import com.admintools.domain.port.AliadoRepositoryPort;
 import com.admintools.domain.port.EmpresaRepositoryPort;
@@ -23,12 +24,15 @@ public class AliadoUseCase {
     private final EmpresaRepositoryPort empresaRepository;
 
     public AliadoResponse crear(AliadoRequest request) {
-        var empresa = empresaRepository.findById(request.getEmpresaId())
-                .orElseThrow(() -> new IllegalArgumentException("Empresa no encontrada"));
+        List<Empresa> empresas = request.getEmpresaIds().stream()
+                .map(id -> empresaRepository.findById(id)
+                        .orElseThrow(() -> new IllegalArgumentException("Empresa no encontrada: " + id)))
+                .collect(Collectors.toList());
 
         Aliado aliado = Aliado.builder()
                 .nombre(request.getNombre())
-                .empresa(empresa)
+                .empresa(empresas.get(0))
+                .empresas(empresas)
                 .telegramChatId(request.getTelegramChatId())
                 .estado(EstadoAliado.ACTIVO)
                 .build();
@@ -38,11 +42,14 @@ public class AliadoUseCase {
     public AliadoResponse actualizar(UUID id, AliadoRequest request) {
         Aliado aliado = aliadoRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Aliado no encontrado"));
-        var empresa = empresaRepository.findById(request.getEmpresaId())
-                .orElseThrow(() -> new IllegalArgumentException("Empresa no encontrada"));
+        List<Empresa> empresas = request.getEmpresaIds().stream()
+                .map(eid -> empresaRepository.findById(eid)
+                        .orElseThrow(() -> new IllegalArgumentException("Empresa no encontrada: " + eid)))
+                .collect(Collectors.toList());
 
         aliado.setNombre(request.getNombre());
-        aliado.setEmpresa(empresa);
+        aliado.setEmpresa(empresas.get(0));
+        aliado.setEmpresas(empresas);
         aliado.setTelegramChatId(request.getTelegramChatId());
         return mapToResponse(aliadoRepository.save(aliado));
     }
@@ -83,6 +90,12 @@ public class AliadoUseCase {
                         .id(a.getEmpresa().getId())
                         .nombre(a.getEmpresa().getNombre())
                         .build())
+                .empresas(a.getEmpresas().stream()
+                        .map(e -> AliadoResponse.EmpresaResumen.builder()
+                                .id(e.getId())
+                                .nombre(e.getNombre())
+                                .build())
+                        .collect(Collectors.toList()))
                 .telegramChatId(a.getTelegramChatId())
                 .estado(a.getEstado())
                 .fechaCreacion(a.getFechaCreacion())
