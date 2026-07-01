@@ -2,6 +2,7 @@ package com.admintools.infrastructure.rest;
 
 import com.admintools.domain.service.DeployNotificationService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,16 +16,21 @@ public class DespliegueController {
 
     private final DeployNotificationService deployNotificationService;
 
+    @Value("${app.version:desconocida}")
+    private String appVersion;
+
     @PostMapping("/notificar")
     public ResponseEntity<Map<String, Object>> notificarDespliegue(@RequestBody NotificarDespliegueRequest request) {
+        String version = request.getVersion() != null && !request.getVersion().isBlank()
+                ? request.getVersion() : appVersion;
         if (request.isExitoso()) {
-            deployNotificationService.notifySuccess(request.getVersion());
+            deployNotificationService.notifySuccess(version);
         } else {
-            deployNotificationService.notifyFailure(request.getVersion(), request.getError());
+            deployNotificationService.notifyFailure(version, request.getError());
         }
         return ResponseEntity.ok(Map.of(
             "mensaje", "Notificaci\u00f3n enviada",
-            "version", request.getVersion(),
+            "version", version,
             "estado", request.isExitoso() ? "EXITOSO" : "FALLIDO",
             "fecha", LocalDateTime.now().toString()
         ));
