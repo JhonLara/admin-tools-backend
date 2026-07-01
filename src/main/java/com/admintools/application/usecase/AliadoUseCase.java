@@ -7,6 +7,8 @@ import com.admintools.domain.model.Empresa;
 import com.admintools.domain.model.EstadoAliado;
 import com.admintools.domain.port.AliadoRepositoryPort;
 import com.admintools.domain.port.EmpresaRepositoryPort;
+import com.admintools.domain.port.NotificationPort;
+import com.admintools.infrastructure.config.TelegramProperties;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +24,8 @@ public class AliadoUseCase {
 
     private final AliadoRepositoryPort aliadoRepository;
     private final EmpresaRepositoryPort empresaRepository;
+    private final NotificationPort notificationPort;
+    private final TelegramProperties telegramProperties;
 
     public AliadoResponse crear(AliadoRequest request) {
         List<Empresa> empresas = request.getEmpresaIds().stream()
@@ -36,7 +40,27 @@ public class AliadoUseCase {
                 .telegramChatId(request.getTelegramChatId())
                 .estado(EstadoAliado.ACTIVO)
                 .build();
-        return mapToResponse(aliadoRepository.save(aliado));
+        Aliado guardado = aliadoRepository.save(aliado);
+
+        String chatId = telegramProperties.getErrorsChatId();
+        if (chatId != null && !chatId.isBlank()) {
+            String mensaje = String.format(
+                    "✅ *NUEVO ALIADO CREADO*\\n\\n" +
+                    "*Nombre:* %s\\n" +
+                    "*Empresa(s):* %s\\n" +
+                    "*Creado por:* %s",
+                    guardado.getNombre(),
+                    guardado.getEmpresas().stream().map(Empresa::getNombre).collect(Collectors.joining(", ")),
+                    "Sistema"
+            );
+            try {
+                notificationPort.sendMessage(chatId, mensaje);
+            } catch (Exception e) {
+                // No bloquear la creacion si falla la notificacion
+            }
+        }
+
+        return mapToResponse(guardado);
     }
 
     public AliadoResponse actualizar(UUID id, AliadoRequest request) {

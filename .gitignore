@@ -33,6 +33,9 @@ target/
 .env.local
 .env.*.local
 
+### Local config ###
+src/main/resources/application-local-prod.yml
+
 ### Logs ###
 *.log
 logs/
