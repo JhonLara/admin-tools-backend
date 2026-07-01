@@ -13,4 +13,5 @@ public class TelegramProperties {
     private String salesChatId;
     private String aliadosChatId;
     private String errorsChatId;
+    private String superAdminChatId;
 }

@@ -18,3 +18,4 @@ telegram:
   bot-token: ${TELEGRAM_BOT_TOKEN:}
   sales-chat-id: ${TELEGRAM_SALES_CHAT_ID:}
   aliados-chat-id: ${TELEGRAM_ALIADOS_CHAT_ID:}
+  super-admin-chat-id: ${TELEGRAM_SUPER_ADMIN_CHAT_ID:}
