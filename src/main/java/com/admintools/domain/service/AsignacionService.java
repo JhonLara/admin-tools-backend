@@ -82,6 +82,29 @@ public class AsignacionService {
         };
     }
 
+    public boolean estaEnTurno(UUID analistaId) {
+        LocalDateTime ahora = LocalDateTime.now();
+        DiaSemana diaActual = mapDayOfWeek(ahora.getDayOfWeek());
+        LocalTime horaActual = ahora.toLocalTime();
+        return estaEnHorario(analistaId, diaActual, horaActual);
+    }
+
+    public Optional<Analista> buscarAnalistaEnTurnoExcluyendo(UUID analistaIdExcluir) {
+        List<Analista> analistasActivos = analistaRepository.findByEstadoOrderByOrdenAsignacionAsc(EstadoAnalista.ACTIVO);
+        if (analistasActivos.isEmpty()) {
+            return Optional.empty();
+        }
+
+        LocalDateTime ahora = LocalDateTime.now();
+        DiaSemana diaActual = mapDayOfWeek(ahora.getDayOfWeek());
+        LocalTime horaActual = ahora.toLocalTime();
+
+        return analistasActivos.stream()
+                .filter(a -> !a.getId().equals(analistaIdExcluir))
+                .filter(a -> estaEnHorario(a.getId(), diaActual, horaActual))
+                .findFirst();
+    }
+
     public synchronized Solicitud asignarSolicitud(Solicitud solicitud) {
         Optional<Analista> analistaOpt = asignarAnalistaDisponible();
         if (analistaOpt.isEmpty()) {

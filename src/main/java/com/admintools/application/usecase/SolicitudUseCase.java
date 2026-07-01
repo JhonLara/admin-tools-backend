@@ -249,10 +249,53 @@ public class SolicitudUseCase {
             throw new IllegalArgumentException("La solicitud debe estar en estado VALIDADA para marcar firma recibida");
         }
 
+        String mensaje = null;
+        Analista analistaActual = solicitud.getAnalista();
+        if (analistaActual != null && !asignacionService.estaEnTurno(analistaActual.getId())) {
+            java.util.Optional<Analista> nuevoOpt = asignacionService.buscarAnalistaEnTurnoExcluyendo(analistaActual.getId());
+            if (nuevoOpt.isPresent()) {
+                Analista nuevo = nuevoOpt.get();
+                solicitud.setAnalista(nuevo);
+                solicitud.setFechaAsignacion(LocalDateTime.now());
+                mensaje = "Estado cambiado a FIRMA RECIBIDA. Reasignado a " + nuevo.getNombre() + " porque " + analistaActual.getNombre() + " no está de turno.";
+            } else {
+                mensaje = "Estado cambiado a FIRMA RECIBIDA. No hay analistas en turno disponibles; se mantiene asignado a " + analistaActual.getNombre() + ".";
+            }
+        }
+
+        Aliado aliado = solicitud.getAliado();
+
+        Analista analistaAsignado = solicitud.getAnalista();
+        String reasignacionPrefix = "";
+        if (analistaActual != null && analistaAsignado != null && !analistaAsignado.getId().equals(analistaActual.getId())) {
+            reasignacionPrefix = String.format("Solicitud reasignada\nAnalista: %s\n\n", analistaAsignado.getNombre());
+        }
+
+        String telegramMensaje = String.format(
+                reasignacionPrefix + "Firma digital recibida\nCliente: %s\nEmpresa: %s\nAliado: %s\nEstado: Firma recibida",
+                solicitud.getCedulaCliente(),
+                solicitud.getEmpresa().getNombre(),
+                aliado.getNombre()
+        );
+
+        String respuesta = notificationPort.sendMessage(telegramProperties.getSalesChatId(), telegramMensaje);
+
+        HistorialNotificacion historial = HistorialNotificacion.builder()
+                .solicitud(solicitud)
+                .canal(Canal.TELEGRAM)
+                .origen(Origen.VENDEDOR)
+                .destino(Destino.GRUPO_ANALISTAS)
+                .mensajeEnviado(telegramMensaje)
+                .estadoEnvio(respuesta.contains("error") || respuesta.startsWith("Error:") ? EstadoEnvio.ERROR : EstadoEnvio.ENVIADO)
+                .respuestaIntegracion(respuesta)
+                .build();
+
+        historialRepository.save(historial);
+
         solicitud.setEstado(EstadoSolicitud.FIRMA_RECIBIDA);
         solicitud = solicitudRepository.save(solicitud);
 
-        return mapToResponse(solicitud);
+        return mapToResponse(solicitud, mensaje);
     }
 
     public SolicitudResponse marcarRevisado(UUID solicitudId) {
@@ -263,23 +306,43 @@ public class SolicitudUseCase {
             throw new IllegalArgumentException("La solicitud debe estar en estado NOTIFICADA para marcar como revisada");
         }
 
+        String mensajeReasignacion = null;
+        Analista analistaActual = solicitud.getAnalista();
+        if (analistaActual != null && !asignacionService.estaEnTurno(analistaActual.getId())) {
+            java.util.Optional<Analista> nuevoOpt = asignacionService.buscarAnalistaEnTurnoExcluyendo(analistaActual.getId());
+            if (nuevoOpt.isPresent()) {
+                Analista nuevo = nuevoOpt.get();
+                solicitud.setAnalista(nuevo);
+                solicitud.setFechaAsignacion(LocalDateTime.now());
+                mensajeReasignacion = "Estado cambiado a EN PROCESO. Reasignado a " + nuevo.getNombre() + " porque " + analistaActual.getNombre() + " no está de turno.";
+            } else {
+                mensajeReasignacion = "Estado cambiado a EN PROCESO. No hay analistas en turno disponibles; se mantiene asignado a " + analistaActual.getNombre() + ".";
+            }
+        }
+
         Aliado aliado = solicitud.getAliado();
 
-        String mensaje = String.format(
-                "El vendedor ha revisado la observación\nCliente: %s\nEmpresa: %s\nAliado: %s\nEstado: En proceso",
+        Analista analistaAsignado = solicitud.getAnalista();
+        String reasignacionPrefix = "";
+        if (analistaActual != null && analistaAsignado != null && !analistaAsignado.getId().equals(analistaActual.getId())) {
+            reasignacionPrefix = String.format("Solicitud reasignada\nAnalista: %s\n\n", analistaAsignado.getNombre());
+        }
+
+        String telegramMensaje = String.format(
+                reasignacionPrefix + "El vendedor ha revisado la observación\nCliente: %s\nEmpresa: %s\nAliado: %s\nEstado: En proceso",
                 solicitud.getCedulaCliente(),
                 solicitud.getEmpresa().getNombre(),
                 aliado.getNombre()
         );
 
-        String respuesta = notificationPort.sendMessage(telegramProperties.getSalesChatId(), mensaje);
+        String respuesta = notificationPort.sendMessage(telegramProperties.getSalesChatId(), telegramMensaje);
 
         HistorialNotificacion historial = HistorialNotificacion.builder()
                 .solicitud(solicitud)
                 .canal(Canal.TELEGRAM)
                 .origen(Origen.VENDEDOR)
                 .destino(Destino.GRUPO_ANALISTAS)
-                .mensajeEnviado(mensaje)
+                .mensajeEnviado(telegramMensaje)
                 .estadoEnvio(respuesta.contains("error") || respuesta.startsWith("Error:") ? EstadoEnvio.ERROR : EstadoEnvio.ENVIADO)
                 .respuestaIntegracion(respuesta)
                 .build();
@@ -289,7 +352,7 @@ public class SolicitudUseCase {
         solicitud.setEstado(EstadoSolicitud.EN_PROCESO);
         solicitud = solicitudRepository.save(solicitud);
 
-        return mapToResponse(solicitud);
+        return mapToResponse(solicitud, mensajeReasignacion);
     }
 
     @Transactional(readOnly = true)
@@ -304,6 +367,10 @@ public class SolicitudUseCase {
     }
 
     private SolicitudResponse mapToResponse(Solicitud s) {
+        return mapToResponse(s, null);
+    }
+
+    private SolicitudResponse mapToResponse(Solicitud s, String mensaje) {
         return SolicitudResponse.builder()
                 .id(s.getId())
                 .cedulaCliente(s.getCedulaCliente())
@@ -325,6 +392,7 @@ public class SolicitudUseCase {
                 .fechaCreacion(s.getFechaCreacion())
                 .fechaAsignacion(s.getFechaAsignacion())
                 .fechaFinalizacion(s.getFechaFinalizacion())
+                .mensaje(mensaje)
                 .build();
     }
 }

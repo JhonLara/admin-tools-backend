@@ -20,6 +20,7 @@ public class SolicitudResponse {
     private LocalDateTime fechaCreacion;
     private LocalDateTime fechaAsignacion;
     private LocalDateTime fechaFinalizacion;
+    private String mensaje;
 
     @Data
     @Builder

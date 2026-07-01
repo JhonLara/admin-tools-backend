@@ -17,7 +17,7 @@ public class JwtUtil {
     @Value("${jwt.secret:admin-tools-default-secret-key-2026-change-in-prod}")
     private String secret;
 
-    @Value("${jwt.expiration:86400000}")
+    @Value("${jwt.expiration:28800000}")
     private long expiration;
 
     private SecretKey getSigningKey() {
