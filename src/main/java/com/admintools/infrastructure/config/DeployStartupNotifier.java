@@ -21,7 +21,7 @@ public class DeployStartupNotifier implements ApplicationRunner {
     @Override
     public void run(ApplicationArguments args) {
         try {
-            deployNotificationService.notifySuccess(appVersion);
+            deployNotificationService.notifySuccess(appVersion, "BACKEND");
             log.info("Notificaci\u00f3n de despliegue exitoso enviada (versi\u00f3n: {})", appVersion);
         } catch (Exception e) {
             log.error("No se pudo enviar notificaci\u00f3n de despliegue al iniciar", e);

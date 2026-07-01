@@ -23,14 +23,17 @@ public class DespliegueController {
     public ResponseEntity<Map<String, Object>> notificarDespliegue(@RequestBody NotificarDespliegueRequest request) {
         String version = request.getVersion() != null && !request.getVersion().isBlank()
                 ? request.getVersion() : appVersion;
+        String componente = request.getComponente() != null && !request.getComponente().isBlank()
+                ? request.getComponente() : "BACKEND";
         if (request.isExitoso()) {
-            deployNotificationService.notifySuccess(version);
+            deployNotificationService.notifySuccess(version, componente);
         } else {
-            deployNotificationService.notifyFailure(version, request.getError());
+            deployNotificationService.notifyFailure(version, request.getError(), componente);
         }
         return ResponseEntity.ok(Map.of(
             "mensaje", "Notificaci\u00f3n enviada",
             "version", version,
+            "componente", componente,
             "estado", request.isExitoso() ? "EXITOSO" : "FALLIDO",
             "fecha", LocalDateTime.now().toString()
         ));
@@ -40,6 +43,7 @@ public class DespliegueController {
         private String version;
         private boolean exitoso;
         private String error;
+        private String componente;
 
         public String getVersion() { return version; }
         public void setVersion(String version) { this.version = version; }
@@ -47,5 +51,7 @@ public class DespliegueController {
         public void setExitoso(boolean exitoso) { this.exitoso = exitoso; }
         public String getError() { return error; }
         public void setError(String error) { this.error = error; }
+        public String getComponente() { return componente; }
+        public void setComponente(String componente) { this.componente = componente; }
     }
 }

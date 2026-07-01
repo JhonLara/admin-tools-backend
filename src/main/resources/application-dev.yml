@@ -1,25 +1,20 @@
 spring:
   datasource:
-    url: jdbc:h2:mem:admintoolsdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
-    driver-class-name: org.h2.Driver
-    username: sa
-    password:
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/admintools}
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:}
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: ${DDL_AUTO:update}
     show-sql: true
     properties:
       hibernate:
         format_sql: true
         jdbc:
           time_zone: ${TZ:America/Bogota}
-  h2:
-    console:
-      enabled: true
-      path: /h2-console
 
 telegram:
-  errors-chat-id: "-5463513988"
+  errors-chat-id: "-1004462749433"
 
 logging:
   level:
