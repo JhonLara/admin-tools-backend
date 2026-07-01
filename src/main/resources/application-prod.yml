@@ -10,7 +10,7 @@ spring:
           time_zone: ${TZ:America/Bogota}
 
 telegram:
-  errors-chat-id: "-5463513988"
+  errors-chat-id: "-1004462749433"
 
 logging:
   level:
