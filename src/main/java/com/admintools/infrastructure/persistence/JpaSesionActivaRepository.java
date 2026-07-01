@@ -23,6 +23,8 @@ public interface JpaSesionActivaRepository extends JpaRepository<SesionActiva, U
 
     long countByActivaTrueAndFechaExpiracionAfter(LocalDateTime fecha);
 
+    long countByUsername(String username);
+
     @Modifying
     @Query("UPDATE SesionActiva s SET s.activa = false WHERE s.token = :token")
     void invalidateByToken(@Param("token") String token);
