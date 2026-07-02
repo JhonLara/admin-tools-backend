@@ -272,10 +272,11 @@ public class SolicitudUseCase {
         }
 
         String telegramMensaje = String.format(
-                reasignacionPrefix + "Firma digital recibida\nCliente: %s\nEmpresa: %s\nAliado: %s\nEstado: Firma recibida",
+                reasignacionPrefix + "Firma digital recibida\nCliente: %s\nEmpresa: %s\nAliado: %s\nAnalista: %s\nEstado: Firma recibida",
                 solicitud.getCedulaCliente(),
                 solicitud.getEmpresa().getNombre(),
-                aliado.getNombre()
+                aliado.getNombre(),
+                analistaAsignado != null ? analistaAsignado.getNombre() : "No asignado"
         );
 
         String respuesta = notificationPort.sendMessage(telegramProperties.getSalesChatId(), telegramMensaje);
@@ -329,10 +330,11 @@ public class SolicitudUseCase {
         }
 
         String telegramMensaje = String.format(
-                reasignacionPrefix + "El vendedor ha revisado la observación\nCliente: %s\nEmpresa: %s\nAliado: %s\nEstado: En proceso",
+                reasignacionPrefix + "El vendedor ha revisado la observación\nCliente: %s\nEmpresa: %s\nAliado: %s\nAnalista: %s\nEstado: En proceso",
                 solicitud.getCedulaCliente(),
                 solicitud.getEmpresa().getNombre(),
-                aliado.getNombre()
+                aliado.getNombre(),
+                analistaAsignado != null ? analistaAsignado.getNombre() : "No asignado"
         );
 
         String respuesta = notificationPort.sendMessage(telegramProperties.getSalesChatId(), telegramMensaje);
