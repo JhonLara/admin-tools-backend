@@ -87,4 +87,10 @@ public class SesionActivaRepositoryAdapter implements SesionActivaRepositoryPort
     public void invalidateByToken(String token) {
         jpaRepository.invalidateByToken(token);
     }
+
+    @Override
+    @Transactional
+    public void invalidateByUsername(String username) {
+        jpaRepository.invalidateByUsername(username);
+    }
 }

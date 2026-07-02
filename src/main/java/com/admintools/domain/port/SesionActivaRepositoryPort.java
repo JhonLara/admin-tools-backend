@@ -22,4 +22,5 @@ public interface SesionActivaRepositoryPort {
     void deleteByFechaInicioBetween(LocalDateTime inicio, LocalDateTime fin);
     void deleteById(UUID id);
     void invalidateByToken(String token);
+    void invalidateByUsername(String username);
 }

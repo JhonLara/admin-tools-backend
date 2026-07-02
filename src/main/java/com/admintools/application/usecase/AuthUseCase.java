@@ -3,6 +3,7 @@ package com.admintools.application.usecase;
 import com.admintools.application.dto.LoginRequest;
 import com.admintools.application.dto.LoginResponse;
 import com.admintools.domain.model.EstadoUsuario;
+import com.admintools.domain.model.Rol;
 import com.admintools.domain.model.SesionActiva;
 import com.admintools.domain.model.Usuario;
 import com.admintools.domain.port.SesionActivaRepositoryPort;
@@ -36,6 +37,11 @@ public class AuthUseCase {
 
         if (usuario.getEstado() != EstadoUsuario.ACTIVO) {
             throw new BadCredentialsException("Usuario inactivo");
+        }
+
+        // Invalidar sesiones previas del mismo usuario, excepto si es VENDEDOR
+        if (usuario.getRol() != Rol.VENDEDOR) {
+            sesionRepository.invalidateByUsername(usuario.getUsername());
         }
 
         String token = jwtUtil.generateToken(usuario.getUsername(), usuario.getRol(), usuario.getAnalistaId());

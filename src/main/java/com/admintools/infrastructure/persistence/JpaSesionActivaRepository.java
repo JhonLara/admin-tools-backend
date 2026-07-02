@@ -32,4 +32,8 @@ public interface JpaSesionActivaRepository extends JpaRepository<SesionActiva, U
     @Modifying
     @Query("UPDATE SesionActiva s SET s.activa = false WHERE s.token = :token")
     void invalidateByToken(@Param("token") String token);
+
+    @Modifying
+    @Query("UPDATE SesionActiva s SET s.activa = false WHERE s.username = :username AND s.activa = true")
+    void invalidateByUsername(@Param("username") String username);
 }
