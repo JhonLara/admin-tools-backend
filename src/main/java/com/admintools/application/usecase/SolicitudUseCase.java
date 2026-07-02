@@ -268,7 +268,7 @@ public class SolicitudUseCase {
         Analista analistaAsignado = solicitud.getAnalista();
         String reasignacionPrefix = "";
         if (analistaActual != null && analistaAsignado != null && !analistaAsignado.getId().equals(analistaActual.getId())) {
-            reasignacionPrefix = String.format("Solicitud reasignada\nAnalista: %s\n\n", analistaAsignado.getNombre());
+            reasignacionPrefix = "Solicitud reasignada\n\n";
         }
 
         String telegramMensaje = String.format(
@@ -326,7 +326,7 @@ public class SolicitudUseCase {
         Analista analistaAsignado = solicitud.getAnalista();
         String reasignacionPrefix = "";
         if (analistaActual != null && analistaAsignado != null && !analistaAsignado.getId().equals(analistaActual.getId())) {
-            reasignacionPrefix = String.format("Solicitud reasignada\nAnalista: %s\n\n", analistaAsignado.getNombre());
+            reasignacionPrefix = "Solicitud reasignada\n\n";
         }
 
         String telegramMensaje = String.format(
