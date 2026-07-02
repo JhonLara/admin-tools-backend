@@ -68,6 +68,21 @@ public class SesionActivaRepositoryAdapter implements SesionActivaRepositoryPort
     }
 
     @Override
+    public List<SesionActiva> findByFechaInicioBetween(LocalDateTime inicio, LocalDateTime fin) {
+        return jpaRepository.findByFechaInicioBetween(inicio, fin);
+    }
+
+    @Override
+    public long countByFechaInicioBetween(LocalDateTime inicio, LocalDateTime fin) {
+        return jpaRepository.countByFechaInicioBetween(inicio, fin);
+    }
+
+    @Override
+    public void deleteByFechaInicioBetween(LocalDateTime inicio, LocalDateTime fin) {
+        jpaRepository.deleteByFechaInicioBetween(inicio, fin);
+    }
+
+    @Override
     @Transactional
     public void invalidateByToken(String token) {
         jpaRepository.invalidateByToken(token);

@@ -11,4 +11,5 @@ import java.util.UUID;
 @Repository
 public interface JpaAliadoRepository extends JpaRepository<Aliado, UUID> {
     List<Aliado> findByEstado(EstadoAliado estado);
+    long count();
 }

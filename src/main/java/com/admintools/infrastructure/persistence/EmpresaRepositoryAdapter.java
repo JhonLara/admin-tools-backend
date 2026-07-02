@@ -37,6 +37,11 @@ public class EmpresaRepositoryAdapter implements EmpresaRepositoryPort {
     }
 
     @Override
+    public long count() {
+        return jpaRepository.count();
+    }
+
+    @Override
     public void deleteById(UUID id) {
         jpaRepository.deleteById(id);
     }

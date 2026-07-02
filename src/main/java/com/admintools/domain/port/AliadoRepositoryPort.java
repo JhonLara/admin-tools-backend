@@ -13,5 +13,6 @@ public interface AliadoRepositoryPort {
     List<Aliado> findAll();
     List<Aliado> findByEstado(EstadoAliado estado);
     List<Aliado> findAllByIdIn(List<UUID> ids);
+    long count();
     void deleteById(UUID id);
 }

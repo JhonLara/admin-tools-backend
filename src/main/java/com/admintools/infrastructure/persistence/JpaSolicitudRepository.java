@@ -5,6 +5,7 @@ import com.admintools.domain.model.Solicitud;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -19,4 +20,7 @@ public interface JpaSolicitudRepository extends JpaRepository<Solicitud, UUID> {
     long count();
     List<Solicitud> findTop10ByOrderByFechaCreacionDesc();
     Optional<Solicitud> findFirstByAnalistaIsNotNullOrderByFechaAsignacionDesc();
+    List<Solicitud> findByFechaCreacionBetween(LocalDateTime inicio, LocalDateTime fin);
+    long countByFechaCreacionBetween(LocalDateTime inicio, LocalDateTime fin);
+    void deleteByFechaCreacionBetween(LocalDateTime inicio, LocalDateTime fin);
 }

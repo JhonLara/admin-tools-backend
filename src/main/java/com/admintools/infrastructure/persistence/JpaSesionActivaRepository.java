@@ -25,6 +25,10 @@ public interface JpaSesionActivaRepository extends JpaRepository<SesionActiva, U
 
     long countByUsername(String username);
 
+    List<SesionActiva> findByFechaInicioBetween(LocalDateTime inicio, LocalDateTime fin);
+    long countByFechaInicioBetween(LocalDateTime inicio, LocalDateTime fin);
+    void deleteByFechaInicioBetween(LocalDateTime inicio, LocalDateTime fin);
+
     @Modifying
     @Query("UPDATE SesionActiva s SET s.activa = false WHERE s.token = :token")
     void invalidateByToken(@Param("token") String token);

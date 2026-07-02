@@ -3,6 +3,7 @@ package com.admintools.domain.port;
 import com.admintools.domain.model.EstadoSolicitud;
 import com.admintools.domain.model.Solicitud;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -19,5 +20,8 @@ public interface SolicitudRepositoryPort {
     long count();
     List<Solicitud> findTop10ByOrderByFechaCreacionDesc();
     Optional<Solicitud> findFirstByAnalistaIsNotNullOrderByFechaAsignacionDesc();
+    List<Solicitud> findByFechaCreacionBetween(LocalDateTime inicio, LocalDateTime fin);
+    long countByFechaCreacionBetween(LocalDateTime inicio, LocalDateTime fin);
+    void deleteByFechaCreacionBetween(LocalDateTime inicio, LocalDateTime fin);
     void deleteById(UUID id);
 }

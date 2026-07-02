@@ -72,6 +72,21 @@ public class SolicitudRepositoryAdapter implements SolicitudRepositoryPort {
     }
 
     @Override
+    public List<Solicitud> findByFechaCreacionBetween(java.time.LocalDateTime inicio, java.time.LocalDateTime fin) {
+        return jpaRepository.findByFechaCreacionBetween(inicio, fin);
+    }
+
+    @Override
+    public long countByFechaCreacionBetween(java.time.LocalDateTime inicio, java.time.LocalDateTime fin) {
+        return jpaRepository.countByFechaCreacionBetween(inicio, fin);
+    }
+
+    @Override
+    public void deleteByFechaCreacionBetween(java.time.LocalDateTime inicio, java.time.LocalDateTime fin) {
+        jpaRepository.deleteByFechaCreacionBetween(inicio, fin);
+    }
+
+    @Override
     public void deleteById(UUID id) {
         jpaRepository.deleteById(id);
     }

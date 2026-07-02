@@ -68,8 +68,9 @@ public class SecurityConfig {
                         .requestMatchers("/api/sesiones", "/api/sesiones/**").hasAnyAuthority("ROLE_SUPER_ADMIN")
                         .requestMatchers("/api/test/**").hasAnyAuthority("ROLE_SUPER_ADMIN")
 
-                        // Notificación de despliegue
+                        // Notificación de despliegue y backup
                         .requestMatchers("/api/admin/despliegue/**").hasAnyAuthority("ROLE_SUPER_ADMIN")
+                        .requestMatchers("/api/admin/backup/**").hasAnyAuthority("ROLE_SUPER_ADMIN")
 
                         // Configuración de grupos Telegram por aliado+empresa
                         .requestMatchers("/api/aliado-empresa-telegram").hasAnyAuthority("ROLE_ADMINISTRADOR", "ROLE_SUPER_ADMIN")

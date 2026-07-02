@@ -42,6 +42,11 @@ public class AliadoRepositoryAdapter implements AliadoRepositoryPort {
     }
 
     @Override
+    public long count() {
+        return jpaRepository.count();
+    }
+
+    @Override
     public void deleteById(UUID id) {
         jpaRepository.deleteById(id);
     }
