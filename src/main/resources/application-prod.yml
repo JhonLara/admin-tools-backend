@@ -12,6 +12,16 @@ spring:
 telegram:
   errors-chat-id: "-1004462749433"
 
+external:
+  api:
+    auth-url: ${EXTERNAL_API_AUTH_URL:https://security.sadmin.net/security/login}
+    reports-base-url: ${EXTERNAL_API_REPORTS_BASE_URL:https://reports.sadmin.net/api}
+
+sadmin:
+  unomasuno:
+    username: ${SADMIN_UNOMASUNO_USERNAME:apiunomasuno@datacs.ca}
+    password: ${SADMIN_UNOMASUNO_PASSWORD:Jpi*Qh8bif/bI703j3+0Vbxqiq1ygC}
+
 logging:
   level:
     com.admintools: INFO
