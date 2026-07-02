@@ -22,3 +22,13 @@ telegram:
   sales-chat-id: ${TELEGRAM_SALES_CHAT_ID:}
   aliados-chat-id: ${TELEGRAM_ALIADOS_CHAT_ID:}
   super-admin-chat-id: ${TELEGRAM_SUPER_ADMIN_CHAT_ID:}
+
+external:
+  api:
+    auth-url: ${EXTERNAL_API_AUTH_URL:}
+    reports-base-url: ${EXTERNAL_API_REPORTS_BASE_URL:}
+
+sadmin:
+  unomasuno:
+    username: ${SADMIN_UNOMASUNO_USERNAME:}
+    password: ${SADMIN_UNOMASUNO_PASSWORD:}

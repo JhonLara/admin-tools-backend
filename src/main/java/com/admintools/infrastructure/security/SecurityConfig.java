@@ -68,6 +68,9 @@ public class SecurityConfig {
                         .requestMatchers("/api/sesiones", "/api/sesiones/**").hasAnyAuthority("ROLE_SUPER_ADMIN")
                         .requestMatchers("/api/test/**").hasAnyAuthority("ROLE_SUPER_ADMIN")
 
+                        // Reportes de cartera (Cartex)
+                        .requestMatchers("/api/reports/**").hasAnyAuthority("ROLE_ADMINISTRADOR", "ROLE_SUPER_ADMIN")
+
                         // Notificación de despliegue y backup
                         .requestMatchers("/api/admin/despliegue/**").hasAnyAuthority("ROLE_SUPER_ADMIN")
                         .requestMatchers("/api/admin/backup/**").hasAnyAuthority("ROLE_SUPER_ADMIN")
