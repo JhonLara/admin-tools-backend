@@ -3,6 +3,7 @@ package com.admintools.domain.model;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -50,4 +51,8 @@ public class Solicitud {
 
     @Column(name = "fecha_finalizacion")
     private LocalDateTime fechaFinalizacion;
+
+    @UpdateTimestamp
+    @Column(name = "fecha_actualizacion", nullable = false)
+    private LocalDateTime fechaActualizacion;
 }

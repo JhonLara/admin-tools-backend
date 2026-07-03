@@ -219,7 +219,7 @@ public class SolicitudUseCase {
     @Transactional(readOnly = true)
     public List<SolicitudResponse> listarSolicitudes() {
         return solicitudRepository.findAll().stream()
-                .sorted((a, b) -> b.getFechaCreacion().compareTo(a.getFechaCreacion()))
+                .sorted((a, b) -> b.getFechaActualizacion().compareTo(a.getFechaActualizacion()))
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
     }
@@ -228,7 +228,7 @@ public class SolicitudUseCase {
     public List<SolicitudResponse> listarSolicitudesPorAnalista(UUID analistaId) {
         return solicitudRepository.findByAnalistaId(analistaId).stream()
                 .filter(s -> s.getEstado() != EstadoSolicitud.APROBADA && s.getEstado() != EstadoSolicitud.RECHAZADA)
-                .sorted((a, b) -> b.getFechaCreacion().compareTo(a.getFechaCreacion()))
+                .sorted((a, b) -> b.getFechaActualizacion().compareTo(a.getFechaActualizacion()))
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
     }
@@ -236,7 +236,7 @@ public class SolicitudUseCase {
     @Transactional(readOnly = true)
     public List<SolicitudResponse> listarSolicitudesPorVendedor(String username) {
         return solicitudRepository.findByCreadoPor(username).stream()
-                .sorted((a, b) -> b.getFechaCreacion().compareTo(a.getFechaCreacion()))
+                .sorted((a, b) -> b.getFechaActualizacion().compareTo(a.getFechaActualizacion()))
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
     }
@@ -394,6 +394,7 @@ public class SolicitudUseCase {
                 .fechaCreacion(s.getFechaCreacion())
                 .fechaAsignacion(s.getFechaAsignacion())
                 .fechaFinalizacion(s.getFechaFinalizacion())
+                .fechaActualizacion(s.getFechaActualizacion())
                 .mensaje(mensaje)
                 .build();
     }
