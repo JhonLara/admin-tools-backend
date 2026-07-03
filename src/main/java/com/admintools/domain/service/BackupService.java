@@ -28,6 +28,7 @@ public class BackupService {
 
     private final BackupConfigRepositoryPort backupConfigRepository;
     private final BackupEjecucionRepositoryPort backupEjecucionRepository;
+    private final BackupReporteRepositoryPort backupReporteRepository;
     private final MetricasMensualesRepositoryPort metricasMensualesRepository;
     private final SolicitudRepositoryPort solicitudRepository;
     private final HistorialNotificacionRepositoryPort historialRepository;
@@ -126,6 +127,7 @@ public class BackupService {
             String csv = generarCsvSolicitudes(solicitudes);
             String path = guardarReporte("solicitudes", periodo, csv);
             log.info("Reporte de solicitudes guardado en {}", path);
+            guardarReporteEnBaseDeDatos(TipoBackup.SOLICITUDES, periodo, "solicitudes_" + periodo + ".csv", csv, total);
         }
 
         Map<EstadoSolicitud, Long> porEstado = solicitudes.stream()
@@ -155,6 +157,7 @@ public class BackupService {
             String csv = generarCsvHistorial(historial);
             String path = guardarReporte("historial_notificaciones", periodo, csv);
             log.info("Reporte de historial guardado en {}", path);
+            guardarReporteEnBaseDeDatos(TipoBackup.HISTORIAL_NOTIFICACIONES, periodo, "historial_notificaciones_" + periodo + ".csv", csv, total);
         }
 
         historialRepository.deleteByFechaEnvioBetween(inicio, fin);
@@ -174,6 +177,7 @@ public class BackupService {
             String csv = generarCsvSesiones(sesiones);
             String path = guardarReporte("sesiones", periodo, csv);
             log.info("Reporte de sesiones guardado en {}", path);
+            guardarReporteEnBaseDeDatos(TipoBackup.SESIONES, periodo, "sesiones_" + periodo + ".csv", csv, total);
         }
 
         sesionRepository.deleteByFechaInicioBetween(inicio, fin);
@@ -271,6 +275,19 @@ public class BackupService {
         Path filePath = pathDir.resolve(filename);
         Files.writeString(filePath, contenido);
         return filePath.toAbsolutePath().toString();
+    }
+
+    private void guardarReporteEnBaseDeDatos(TipoBackup tipo, String periodo, String nombreArchivo, String contenido, int registrosProcesados) {
+        BackupReporte reporte = BackupReporte.builder()
+                .tipo(tipo)
+                .periodo(periodo)
+                .nombreArchivo(nombreArchivo)
+                .contenido(contenido)
+                .registrosProcesados(registrosProcesados)
+                .tamanoBytes(contenido.getBytes().length)
+                .build();
+        backupReporteRepository.save(reporte);
+        log.info("Reporte persistido en base de datos: {} periodo {}, {} bytes", nombreArchivo, periodo, contenido.getBytes().length);
     }
 
     private String escapeCsv(String value) {
