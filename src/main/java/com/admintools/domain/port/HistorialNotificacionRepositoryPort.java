@@ -10,6 +10,7 @@ public interface HistorialNotificacionRepositoryPort {
     HistorialNotificacion save(HistorialNotificacion historial);
     List<HistorialNotificacion> findAll();
     List<HistorialNotificacion> findBySolicitudId(UUID solicitudId);
+    void deleteBySolicitudId(UUID solicitudId);
     List<HistorialNotificacion> findByFechaEnvioBetween(LocalDateTime inicio, LocalDateTime fin);
     long countByFechaEnvioBetween(LocalDateTime inicio, LocalDateTime fin);
     void deleteByFechaEnvioBetween(LocalDateTime inicio, LocalDateTime fin);

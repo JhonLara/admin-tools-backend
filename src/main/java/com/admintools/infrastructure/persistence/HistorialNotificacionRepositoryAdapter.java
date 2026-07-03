@@ -30,6 +30,11 @@ public class HistorialNotificacionRepositoryAdapter implements HistorialNotifica
     }
 
     @Override
+    public void deleteBySolicitudId(UUID solicitudId) {
+        jpaRepository.deleteBySolicitudId(solicitudId);
+    }
+
+    @Override
     public List<HistorialNotificacion> findByFechaEnvioBetween(java.time.LocalDateTime inicio, java.time.LocalDateTime fin) {
         return jpaRepository.findByFechaEnvioBetween(inicio, fin);
     }

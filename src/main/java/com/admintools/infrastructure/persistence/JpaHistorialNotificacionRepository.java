@@ -11,6 +11,7 @@ import java.util.UUID;
 @Repository
 public interface JpaHistorialNotificacionRepository extends JpaRepository<HistorialNotificacion, UUID> {
     List<HistorialNotificacion> findBySolicitudId(UUID solicitudId);
+    void deleteBySolicitudId(UUID solicitudId);
     List<HistorialNotificacion> findByFechaEnvioBetween(LocalDateTime inicio, LocalDateTime fin);
     long countByFechaEnvioBetween(LocalDateTime inicio, LocalDateTime fin);
     void deleteByFechaEnvioBetween(LocalDateTime inicio, LocalDateTime fin);

@@ -142,6 +142,12 @@ public class BackupService {
                 .build();
         metricasMensualesRepository.save(metricas);
 
+        // Eliminar historial de notificaciones asociado para evitar error de FK
+        for (Solicitud s : solicitudes) {
+            historialRepository.deleteBySolicitudId(s.getId());
+        }
+        log.info("Historial de notificaciones eliminado para {} solicitudes del periodo {}", total, periodo);
+
         solicitudRepository.deleteByFechaCreacionBetween(inicio, fin);
         return total;
     }
