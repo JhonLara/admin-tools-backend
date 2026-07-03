@@ -135,11 +135,19 @@ public class BackupService {
         Map<EstadoSolicitud, Long> porEstado = solicitudes.stream()
                 .collect(Collectors.groupingBy(Solicitud::getEstado, Collectors.counting()));
 
-        MetricasMensuales metricas = MetricasMensuales.builder()
-                .periodo(periodo)
-                .totalSolicitudes(total)
-                .solicitudesPorEstado(objectMapper.writeValueAsString(porEstado))
-                .build();
+        MetricasMensuales existentes = metricasMensualesRepository.findByPeriodo(periodo).orElse(null);
+        MetricasMensuales metricas;
+        if (existentes != null) {
+            metricas = existentes;
+            metricas.setTotalSolicitudes(total);
+            metricas.setSolicitudesPorEstado(objectMapper.writeValueAsString(porEstado));
+        } else {
+            metricas = MetricasMensuales.builder()
+                    .periodo(periodo)
+                    .totalSolicitudes(total)
+                    .solicitudesPorEstado(objectMapper.writeValueAsString(porEstado))
+                    .build();
+        }
         metricasMensualesRepository.save(metricas);
 
         // Eliminar historial de notificaciones asociado para evitar error de FK
