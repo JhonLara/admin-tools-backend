@@ -48,12 +48,14 @@ public class BackupController {
     }
 
     @PostMapping("/ejecutar/{tipo}")
-    public ResponseEntity<Map<String, Object>> ejecutarManual(@PathVariable String tipo) {
+    public ResponseEntity<Map<String, Object>> ejecutarManual(@PathVariable String tipo, @RequestBody(required = false) EjecutarBackupRequest request) {
         TipoBackup tipoBackup = TipoBackup.valueOf(tipo.toUpperCase());
-        backupService.ejecutarBackupManual(tipoBackup);
+        String periodo = request != null ? request.periodo() : null;
+        backupService.ejecutarBackupManual(tipoBackup, periodo);
         return ResponseEntity.ok(Map.of(
                 "mensaje", "Backup manual iniciado",
                 "tipo", tipoBackup.name(),
+                "periodo", periodo != null ? periodo : "default",
                 "fecha", LocalDateTime.now().toString()
         ));
     }
@@ -105,6 +107,8 @@ public class BackupController {
                 "archivo", reporte.getNombreArchivo()
         ));
     }
+
+    public record EjecutarBackupRequest(String periodo) {}
 
     public static class BackupConfigRequest {
         private boolean activo;

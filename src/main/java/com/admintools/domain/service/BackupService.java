@@ -50,23 +50,25 @@ public class BackupService {
             }
 
             BackupConfig config = configOpt.get();
-            ejecutarBackup(tipo, config);
+            ejecutarBackup(tipo, config, null);
         }
 
         log.info("Backup mensual programado finalizado");
     }
 
     @Transactional
-    public void ejecutarBackupManual(TipoBackup tipo) {
+    public void ejecutarBackupManual(TipoBackup tipo, String periodo) {
         Optional<BackupConfig> configOpt = backupConfigRepository.findByTipo(tipo);
         if (configOpt.isEmpty()) {
             throw new IllegalStateException("No hay configuracion para backup tipo " + tipo);
         }
-        ejecutarBackup(tipo, configOpt.get());
+        ejecutarBackup(tipo, configOpt.get(), periodo);
     }
 
-    private void ejecutarBackup(TipoBackup tipo, BackupConfig config) {
-        String periodo = calcularPeriodo();
+    private void ejecutarBackup(TipoBackup tipo, BackupConfig config, String periodo) {
+        if (periodo == null || periodo.isBlank()) {
+            periodo = calcularPeriodo();
+        }
         LocalDateTime inicio = LocalDate.parse(periodo + "-01").atStartOfDay();
         LocalDateTime fin = inicio.plusMonths(1);
 
