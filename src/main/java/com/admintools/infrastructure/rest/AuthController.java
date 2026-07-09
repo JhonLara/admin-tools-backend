@@ -46,6 +46,7 @@ public class AuthController {
         }
 
         return ResponseEntity.ok(MeResponse.builder()
+                .id(usuario.get().getId().toString())
                 .username(usuario.get().getUsername())
                 .nombre(usuario.get().getNombre())
                 .rol(usuario.get().getRol())

@@ -9,6 +9,7 @@ import java.util.UUID;
 @Data
 @Builder
 public class MeResponse {
+    private String id;
     private String username;
     private String nombre;
     private Rol rol;

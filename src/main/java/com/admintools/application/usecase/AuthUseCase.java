@@ -59,6 +59,7 @@ public class AuthUseCase {
         sesionRepository.save(sesion);
 
         return LoginResponse.builder()
+                .id(usuario.getId().toString())
                 .token(token)
                 .username(usuario.getUsername())
                 .nombre(usuario.getNombre())
