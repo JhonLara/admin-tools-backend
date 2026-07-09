@@ -7,6 +7,7 @@ import com.admintools.domain.port.*;
 import com.admintools.domain.service.AsignacionService;
 import com.admintools.infrastructure.config.TelegramProperties;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,6 +29,37 @@ public class SolicitudUseCase {
     private final AsignacionService asignacionService;
     private final NotificationPort notificationPort;
     private final TelegramProperties telegramProperties;
+    private final UsuarioRepositoryPort usuarioRepository;
+
+    private Usuario getCurrentUser() {
+        String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return usuarioRepository.findByUsername(username)
+                .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
+    }
+
+    private boolean isSuperAdmin(Usuario u) {
+        return u.getRol() == Rol.SUPER_ADMIN;
+    }
+
+    private boolean isAdmin(Usuario u) {
+        return u.getRol() == Rol.ADMINISTRADOR;
+    }
+
+    private boolean perteneceAUsuario(Solicitud s, Usuario u) {
+        if (isSuperAdmin(u)) return true;
+        if (isAdmin(u)) {
+            if (u.getId().equals(s.getEmpresa().getAdministradorId())) return true;
+            if (s.getAnalista() != null && u.getId().equals(s.getAnalista().getAdministradorId())) return true;
+            return false;
+        }
+        if (u.getRol() == Rol.VENDEDOR) {
+            return u.getUsername().equals(s.getCreadoPor());
+        }
+        if (u.getRol() == Rol.ANALISTA && u.getAnalistaId() != null && s.getAnalista() != null) {
+            return u.getAnalistaId().equals(s.getAnalista().getId());
+        }
+        return false;
+    }
 
     private String obtenerChatId(Aliado aliado, Empresa empresa) {
         return aliadoEmpresaTelegramRepository.findByAliadoId(aliado.getId())
@@ -224,7 +256,9 @@ public class SolicitudUseCase {
 
     @Transactional(readOnly = true)
     public List<SolicitudResponse> listarSolicitudes() {
+        Usuario current = getCurrentUser();
         return solicitudRepository.findAll().stream()
+                .filter(s -> perteneceAUsuario(s, current))
                 .sorted((a, b) -> b.getFechaActualizacion().compareTo(a.getFechaActualizacion()))
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());

@@ -3,11 +3,17 @@ package com.admintools.application.usecase;
 import com.admintools.application.dto.DashboardResumen;
 import com.admintools.application.dto.SolicitudResponse;
 import com.admintools.domain.model.EstadoSolicitud;
+import com.admintools.domain.model.Rol;
+import com.admintools.domain.model.Solicitud;
+import com.admintools.domain.model.Usuario;
 import com.admintools.domain.port.SolicitudRepositoryPort;
+import com.admintools.domain.port.UsuarioRepositoryPort;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -18,15 +24,46 @@ import java.util.stream.Collectors;
 public class DashboardUseCase {
 
     private final SolicitudRepositoryPort solicitudRepository;
+    private final UsuarioRepositoryPort usuarioRepository;
+
+    private Usuario getCurrentUser() {
+        String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return usuarioRepository.findByUsername(username)
+                .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
+    }
+
+    private boolean perteneceAUsuario(Solicitud s, Usuario u) {
+        if (u.getRol() == Rol.SUPER_ADMIN) return true;
+        if (u.getRol() == Rol.ADMINISTRADOR) {
+            if (u.getId().equals(s.getEmpresa().getAdministradorId())) return true;
+            if (s.getAnalista() != null && u.getId().equals(s.getAnalista().getAdministradorId())) return true;
+            return false;
+        }
+        if (u.getRol() == Rol.VENDEDOR) {
+            return u.getUsername().equals(s.getCreadoPor());
+        }
+        if (u.getRol() == Rol.ANALISTA && u.getAnalistaId() != null && s.getAnalista() != null) {
+            return u.getAnalistaId().equals(s.getAnalista().getId());
+        }
+        return false;
+    }
+
+    private long contarPorEstado(List<Solicitud> solicitudes, EstadoSolicitud estado) {
+        return solicitudes.stream().filter(s -> s.getEstado() == estado).count();
+    }
 
     public DashboardResumen resumen() {
-        long total = solicitudRepository.count();
-        long notificadas = solicitudRepository.countByEstado(EstadoSolicitud.NOTIFICADA);
-        long errores = solicitudRepository.countByEstado(EstadoSolicitud.ERROR_NOTIFICACION);
-        long finalizadas = solicitudRepository.countByEstado(EstadoSolicitud.FINALIZADA);
-        long pendientes = total - finalizadas;
+        Usuario current = getCurrentUser();
 
-        List<com.admintools.domain.model.Solicitud> todas = solicitudRepository.findAll();
+        List<Solicitud> todas = solicitudRepository.findAll().stream()
+                .filter(s -> perteneceAUsuario(s, current))
+                .collect(Collectors.toList());
+
+        long total = todas.size();
+        long notificadas = contarPorEstado(todas, EstadoSolicitud.NOTIFICADA);
+        long errores = contarPorEstado(todas, EstadoSolicitud.ERROR_NOTIFICACION);
+        long finalizadas = contarPorEstado(todas, EstadoSolicitud.FINALIZADA);
+        long pendientes = total - finalizadas;
 
         Map<String, Long> porAliado = todas.stream()
                 .collect(Collectors.groupingBy(s -> s.getAliado().getNombre(), Collectors.counting()));
@@ -34,7 +71,9 @@ public class DashboardUseCase {
         Map<String, Long> porEstado = todas.stream()
                 .collect(Collectors.groupingBy(s -> s.getEstado().name(), Collectors.counting()));
 
-        List<SolicitudResponse> ultimas = solicitudRepository.findTop10ByOrderByFechaCreacionDesc().stream()
+        List<SolicitudResponse> ultimas = todas.stream()
+                .sorted(Comparator.comparing(Solicitud::getFechaCreacion).reversed())
+                .limit(10)
                 .map(s -> SolicitudResponse.builder()
                         .id(s.getId())
                         .cedulaCliente(s.getCedulaCliente())
