@@ -30,7 +30,7 @@ public class SolicitudUseCase {
     private final TelegramProperties telegramProperties;
 
     private String obtenerChatId(Aliado aliado, Empresa empresa) {
-        return aliadoEmpresaTelegramRepository.findByAliadoIdAndEmpresaId(aliado.getId(), empresa.getId())
+        return aliadoEmpresaTelegramRepository.findByAliadoId(aliado.getId())
                 .map(AliadoEmpresaTelegram::getTelegramChatId)
                 .filter(chatId -> chatId != null && !chatId.isBlank())
                 .orElseGet(() -> {

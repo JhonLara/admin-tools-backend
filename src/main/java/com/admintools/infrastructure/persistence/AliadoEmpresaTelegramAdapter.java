@@ -5,6 +5,7 @@ import com.admintools.domain.port.AliadoEmpresaTelegramRepositoryPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -20,7 +21,12 @@ public class AliadoEmpresaTelegramAdapter implements AliadoEmpresaTelegramReposi
     }
 
     @Override
-    public Optional<AliadoEmpresaTelegram> findByAliadoIdAndEmpresaId(UUID aliadoId, UUID empresaId) {
-        return jpaRepository.findByAliadoIdAndEmpresaId(aliadoId, empresaId);
+    public Optional<AliadoEmpresaTelegram> findByAliadoId(UUID aliadoId) {
+        return jpaRepository.findByAliadoId(aliadoId);
+    }
+
+    @Override
+    public List<AliadoEmpresaTelegram> findAll() {
+        return jpaRepository.findAll();
     }
 }

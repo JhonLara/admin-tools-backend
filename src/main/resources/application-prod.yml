@@ -20,7 +20,7 @@ external:
 sadmin:
   unomasuno:
     username: ${SADMIN_UNOMASUNO_USERNAME:apiunomasuno@datacs.ca}
-    password: ${SADMIN_UNOMASUNO_PASSWORD:Jpi*Qh8bif/bI703j3+0Vbxqiq1ygC}
+    password: ${SADMIN_UNOMASUNO_PASSWORD:****}
 
 logging:
   level:

@@ -9,5 +9,5 @@ import java.util.UUID;
 
 @Repository
 public interface JpaAliadoEmpresaTelegramRepository extends JpaRepository<AliadoEmpresaTelegram, UUID> {
-    Optional<AliadoEmpresaTelegram> findByAliadoIdAndEmpresaId(UUID aliadoId, UUID empresaId);
+    Optional<AliadoEmpresaTelegram> findByAliadoId(UUID aliadoId);
 }
