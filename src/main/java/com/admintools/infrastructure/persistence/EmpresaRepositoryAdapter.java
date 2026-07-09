@@ -37,6 +37,16 @@ public class EmpresaRepositoryAdapter implements EmpresaRepositoryPort {
     }
 
     @Override
+    public List<Empresa> findByAdministradorId(UUID administradorId) {
+        return jpaRepository.findByAdministradorId(administradorId);
+    }
+
+    @Override
+    public List<Empresa> findByAdministradorIdAndEstado(UUID administradorId, EstadoEmpresa estado) {
+        return jpaRepository.findByAdministradorIdAndEstado(administradorId, estado);
+    }
+
+    @Override
     public long count() {
         return jpaRepository.count();
     }

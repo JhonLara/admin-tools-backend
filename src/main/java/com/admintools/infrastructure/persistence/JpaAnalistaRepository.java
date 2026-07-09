@@ -12,5 +12,7 @@ import java.util.UUID;
 @Repository
 public interface JpaAnalistaRepository extends JpaRepository<Analista, UUID> {
     List<Analista> findByEstadoOrderByOrdenAsignacionAsc(EstadoAnalista estado);
+    List<Analista> findByAdministradorId(UUID administradorId);
+    List<Analista> findByAdministradorIdAndEstadoOrderByOrdenAsignacionAsc(UUID administradorId, EstadoAnalista estado);
     Optional<Analista> findByCedula(String cedula);
 }

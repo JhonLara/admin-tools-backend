@@ -34,6 +34,9 @@ public class Analista {
     @Column(nullable = false)
     private EstadoAnalista estado;
 
+    @Column(name = "administrador_id")
+    private UUID administradorId;
+
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
     private LocalDateTime fechaCreacion;

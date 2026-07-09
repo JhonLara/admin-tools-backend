@@ -75,11 +75,12 @@ public class SecurityConfig {
                         .requestMatchers("/api/admin/despliegue/**").hasAnyAuthority("ROLE_SUPER_ADMIN")
                         .requestMatchers("/api/admin/backup/**").hasAnyAuthority("ROLE_SUPER_ADMIN")
 
-                        // Configuración de grupos Telegram por aliado+empresa
+                        // Configuración de grupos Telegram por aliado
                         .requestMatchers("/api/aliado-empresa-telegram").hasAnyAuthority("ROLE_ADMINISTRADOR", "ROLE_SUPER_ADMIN")
 
-                        // Gestión de entidades: solo admin y super admin
-                        .requestMatchers(HttpMethod.POST, "/api/empresas", "/api/aliados", "/api/analistas", "/api/horarios-analistas").hasAnyAuthority("ROLE_ADMINISTRADOR", "ROLE_SUPER_ADMIN")
+                        // Gestión de entidades: solo admin y super admin (empresas solo las crea super admin)
+                        .requestMatchers(HttpMethod.POST, "/api/empresas").hasAnyAuthority("ROLE_SUPER_ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/aliados", "/api/analistas", "/api/horarios-analistas").hasAnyAuthority("ROLE_ADMINISTRADOR", "ROLE_SUPER_ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/empresas/**", "/api/aliados/**", "/api/analistas/**", "/api/horarios-analistas/**").hasAnyAuthority("ROLE_ADMINISTRADOR", "ROLE_SUPER_ADMIN")
                         .requestMatchers(HttpMethod.PATCH, "/api/empresas/**", "/api/aliados/**", "/api/analistas/**", "/api/horarios-analistas/**").hasAnyAuthority("ROLE_ADMINISTRADOR", "ROLE_SUPER_ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/empresas/**", "/api/aliados/**", "/api/analistas/**", "/api/horarios-analistas/**").hasAnyAuthority("ROLE_ADMINISTRADOR", "ROLE_SUPER_ADMIN")

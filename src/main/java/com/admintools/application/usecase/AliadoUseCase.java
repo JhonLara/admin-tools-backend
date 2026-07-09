@@ -5,11 +5,15 @@ import com.admintools.application.dto.AliadoResponse;
 import com.admintools.domain.model.Aliado;
 import com.admintools.domain.model.Empresa;
 import com.admintools.domain.model.EstadoAliado;
+import com.admintools.domain.model.Rol;
+import com.admintools.domain.model.Usuario;
 import com.admintools.domain.port.AliadoRepositoryPort;
 import com.admintools.domain.port.EmpresaRepositoryPort;
 import com.admintools.domain.port.NotificationPort;
+import com.admintools.domain.port.UsuarioRepositoryPort;
 import com.admintools.infrastructure.config.TelegramProperties;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,12 +30,41 @@ public class AliadoUseCase {
     private final EmpresaRepositoryPort empresaRepository;
     private final NotificationPort notificationPort;
     private final TelegramProperties telegramProperties;
+    private final UsuarioRepositoryPort usuarioRepository;
 
-    public AliadoResponse crear(AliadoRequest request) {
-        List<Empresa> empresas = request.getEmpresaIds().stream()
+    private Usuario getCurrentUser() {
+        String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return usuarioRepository.findByUsername(username)
+                .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
+    }
+
+    private boolean isSuperAdmin(Usuario u) {
+        return u.getRol() == Rol.SUPER_ADMIN;
+    }
+
+    private boolean isAdmin(Usuario u) {
+        return u.getRol() == Rol.ADMINISTRADOR;
+    }
+
+    private List<Empresa> validarEmpresas(List<UUID> empresaIds) {
+        Usuario current = getCurrentUser();
+        List<Empresa> empresas = empresaIds.stream()
                 .map(id -> empresaRepository.findById(id)
                         .orElseThrow(() -> new IllegalArgumentException("Empresa no encontrada: " + id)))
                 .collect(Collectors.toList());
+
+        if (!isSuperAdmin(current)) {
+            for (Empresa e : empresas) {
+                if (e.getAdministradorId() == null || !e.getAdministradorId().equals(current.getId())) {
+                    throw new IllegalArgumentException("La empresa " + e.getNombre() + " no está asignada a su usuario");
+                }
+            }
+        }
+        return empresas;
+    }
+
+    public AliadoResponse crear(AliadoRequest request) {
+        List<Empresa> empresas = validarEmpresas(request.getEmpresaIds());
 
         Aliado aliado = Aliado.builder()
                 .nombre(request.getNombre())
@@ -66,10 +99,7 @@ public class AliadoUseCase {
     public AliadoResponse actualizar(UUID id, AliadoRequest request) {
         Aliado aliado = aliadoRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Aliado no encontrado"));
-        List<Empresa> empresas = request.getEmpresaIds().stream()
-                .map(eid -> empresaRepository.findById(eid)
-                        .orElseThrow(() -> new IllegalArgumentException("Empresa no encontrada: " + eid)))
-                .collect(Collectors.toList());
+        List<Empresa> empresas = validarEmpresas(request.getEmpresaIds());
 
         aliado.setNombre(request.getNombre());
         aliado.setEmpresa(empresas.get(0));
@@ -114,10 +144,10 @@ public class AliadoUseCase {
         return AliadoResponse.builder()
                 .id(a.getId())
                 .nombre(a.getNombre())
-                .empresa(AliadoResponse.EmpresaResumen.builder()
+                .empresa(a.getEmpresa() != null ? AliadoResponse.EmpresaResumen.builder()
                         .id(a.getEmpresa().getId())
                         .nombre(a.getEmpresa().getNombre())
-                        .build())
+                        .build() : null)
                 .empresas(a.getEmpresas().stream()
                         .map(e -> AliadoResponse.EmpresaResumen.builder()
                                 .id(e.getId())

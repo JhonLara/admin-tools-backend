@@ -46,6 +46,12 @@ public class SolicitudUseCase {
         Empresa empresa = empresaRepository.findById(request.getEmpresaId())
                 .orElseThrow(() -> new IllegalArgumentException("Empresa no encontrada"));
 
+        boolean empresaPermitida = aliado.getEmpresas().stream()
+                .anyMatch(e -> e.getId().equals(empresa.getId()));
+        if (!empresaPermitida) {
+            throw new IllegalArgumentException("La empresa seleccionada no está relacionada con el aliado");
+        }
+
         Solicitud solicitud = Solicitud.builder()
                 .cedulaCliente(request.getCedulaCliente())
                 .aliado(aliado)

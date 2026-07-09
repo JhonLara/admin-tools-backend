@@ -12,6 +12,8 @@ public interface EmpresaRepositoryPort {
     Optional<Empresa> findById(UUID id);
     List<Empresa> findAll();
     List<Empresa> findByEstado(EstadoEmpresa estado);
+    List<Empresa> findByAdministradorId(UUID administradorId);
+    List<Empresa> findByAdministradorIdAndEstado(UUID administradorId, EstadoEmpresa estado);
     long count();
     void deleteById(UUID id);
 }

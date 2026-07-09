@@ -29,6 +29,11 @@ public class AliadoController {
         return ResponseEntity.ok(aliadoUseCase.listarActivos());
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<AliadoResponse> obtener(@PathVariable UUID id) {
+        return ResponseEntity.ok(aliadoUseCase.obtener(id));
+    }
+
     @PostMapping
     public ResponseEntity<AliadoResponse> crear(@Valid @RequestBody AliadoRequest request) {
         return ResponseEntity.ok(aliadoUseCase.crear(request));

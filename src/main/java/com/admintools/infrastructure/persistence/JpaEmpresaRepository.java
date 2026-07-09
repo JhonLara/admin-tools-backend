@@ -11,5 +11,7 @@ import java.util.UUID;
 @Repository
 public interface JpaEmpresaRepository extends JpaRepository<Empresa, UUID> {
     List<Empresa> findByEstado(EstadoEmpresa estado);
+    List<Empresa> findByAdministradorId(UUID administradorId);
+    List<Empresa> findByAdministradorIdAndEstado(UUID administradorId, EstadoEmpresa estado);
     long count();
 }

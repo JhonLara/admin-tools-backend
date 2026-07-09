@@ -28,6 +28,9 @@ public class Empresa {
     @Column(nullable = false)
     private EstadoEmpresa estado;
 
+    @Column(name = "administrador_id")
+    private UUID administradorId;
+
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
     private LocalDateTime fechaCreacion;

@@ -37,6 +37,16 @@ public class AnalistaRepositoryAdapter implements AnalistaRepositoryPort {
     }
 
     @Override
+    public List<Analista> findByAdministradorId(UUID administradorId) {
+        return jpaRepository.findByAdministradorId(administradorId);
+    }
+
+    @Override
+    public List<Analista> findByAdministradorIdAndEstadoOrderByOrdenAsignacionAsc(UUID administradorId, EstadoAnalista estado) {
+        return jpaRepository.findByAdministradorIdAndEstadoOrderByOrdenAsignacionAsc(administradorId, estado);
+    }
+
+    @Override
     public Optional<Analista> findByCedula(String cedula) {
         return jpaRepository.findByCedula(cedula);
     }

@@ -16,6 +16,7 @@ public class AnalistaResponse {
     private Integer ordenAsignacion;
     private EstadoAnalista estado;
     private Boolean disponible;
+    private UUID administradorId;
     private LocalDateTime fechaCreacion;
     private LocalDateTime fechaActualizacion;
 }

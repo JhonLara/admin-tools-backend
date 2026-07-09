@@ -13,6 +13,7 @@ public class EmpresaResponse {
     private UUID id;
     private String nombre;
     private EstadoEmpresa estado;
+    private UUID administradorId;
     private LocalDateTime fechaCreacion;
     private LocalDateTime fechaActualizacion;
 }
